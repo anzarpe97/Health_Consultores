@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ════════════════════════════════════════════════════════════════════
+         Vistas del modelo seped.config
+         ════════════════════════════════════════════════════════════════════ -->
+
+    <!-- Vista Lista -->
+    <record id="seped_config_view_tree" model="ir.ui.view">
+        <field name="name">seped.config.list</field>
+        <field name="model">seped.config</field>
+        <field name="arch" type="xml">
+            <tree string="Configuraciones SEPED">
+                <field name="name"/>
+                <field name="base_url"/>
+                <field name="codisb"/>
+                <field name="last_product_sync" widget="datetime"/>
+                <field name="last_client_sync" widget="datetime"/>
+                <field name="last_invoice_sync" widget="datetime"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Vista Formulario -->
+    <record id="seped_config_view_form" model="ir.ui.view">
+        <field name="name">seped.config.form</field>
+        <field name="model">seped.config</field>
+        <field name="arch" type="xml">
+            <form string="Configuración SEPED">
+                <sheet>
+                    <!-- Título -->
+                    <div class="oe_title">
+                        <label for="name" string="Nombre de la Configuración"/>
+                        <h1><field name="name" placeholder="SEPED Configuración Principal"/></h1>
+                    </div>
+
+                    <!-- Botón Probar Conexión en la cabecera -->
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_test_connection"
+                                type="object"
+                                class="oe_stat_button"
+                                icon="fa-check-circle"
+                                string="Probar Conexión"/>
+                    </div>
+
+                    <!-- Configuración básica siempre visible -->
+                    <group>
+                        <group string="Conexión API">
+                            <field name="base_url" placeholder="https://seped.openingmarketgroup.com"/>
+                            <field name="api_key" password="True" placeholder="Ingrese su API Key..."/>
+                            <field name="codisb" placeholder="Ej: 507572617"/>
+                            <field name="active"/>
+                        </group>
+                        <group string="Opciones">
+                            <field name="batch_size"/>
+                            <field name="order_limit"/>
+                            <field name="order_estado_filter"/>
+                            <field name="order_estado_procesado"/>
+                            <field name="order_estado_facturado"/>
+                        </group>
+                    </group>
+
+                    <!-- ══ NOTEBOOK: Una pestaña por área ══ -->
+                    <notebook>
+
+                        <!-- ─── INVENTARIO ─── -->
+                        <page string="Inventario" name="tab_inventario">
+                            <group string="Productos y Stock">
+                                <div class="o_row mb-2">
+                                    <button name="action_sync_products"
+                                            type="object"
+                                            string="Sincronizar Productos"
+                                            class="btn-primary"
+                                            icon="fa-refresh"
+                                            confirm="¿Desea enviar todos los productos activos a SEPED?"/>
+                                    <field name="last_product_sync" readonly="1" widget="datetime"/>
+                                </div>
+                                <div class="o_row mb-2">
+                                    <button name="action_sync_stock"
+                                            type="object"
+                                            string="Actualizar Stock"
+                                            class="btn-secondary"
+                                            icon="fa-cubes"
+                                            confirm="¿Desea actualizar las cantidades de stock en SEPED?"/>
+                                    <field name="last_stock_update" readonly="1" widget="datetime"/>
+                                </div>
+                            </group>
+                            <group string="Listas de Precio → Niveles SEPED"
+                                   help="Mapea cada lista de precio de Odoo al nivel de precio correspondiente en SEPED. Si precio1 no está configurado, se usa el precio de venta base del producto.">
+                                <group>
+                                    <field name="pricelist_precio1_id" options="{'no_create': True}"/>
+                                    <field name="pricelist_precio2_id" options="{'no_create': True}"/>
+                                    <field name="pricelist_precio3_id" options="{'no_create': True}"/>
+                                </group>
+                                <group>
+                                    <field name="pricelist_precio4_id" options="{'no_create': True}"/>
+                                    <field name="pricelist_precio5_id" options="{'no_create': True}"/>
+                                </group>
+                            </group>
+                            <group string="Lotes y Categorias">
+                                <div class="o_row mb-2">
+                                    <button name="action_sync_lotes"
+                                            type="object"
+                                            string="Sincronizar Lotes"
+                                            class="btn-secondary"
+                                            icon="fa-barcode"
+                                            confirm="¿Desea enviar los lotes y sus existencias a SEPED?"/>
+                                    <field name="last_lote_sync" readonly="1" widget="datetime"/>
+                                </div>
+                                <div class="o_row mb-2">
+                                    <button name="action_sync_categories"
+                                            type="object"
+                                            string="Sincronizar Categorias"
+                                            class="btn-secondary"
+                                            icon="fa-tags"
+                                            confirm="¿Desea enviar las categorias de productos a SEPED?"/>
+                                    <field name="last_category_sync" readonly="1" widget="datetime"/>
+                                </div>
+                                <div class="o_row mb-2">
+                                    <button name="action_sync_prodfalla"
+                                            type="object"
+                                            string="Productos sin Stock (Falla)"
+                                            class="btn-warning"
+                                            icon="fa-exclamation-triangle"
+                                            confirm="¿Desea enviar los productos sin stock o con falla a SEPED?"/>
+                                    <field name="last_prodfalla_sync" readonly="1" widget="datetime"/>
+                                </div>
+                            </group>
+                        </page>
+
+                        <!-- ─── CLIENTES Y PROVEEDORES ─── -->
+                        <page string="Clientes y Proveedores" name="tab_terceros">
+                            <group string="Clientes">
+                                <div class="o_row mb-2">
+                                    <button name="action_sync_clients"
+                                            type="object"
+                                            string="Sincronizar Clientes"
+                                            class="btn-primary"
+                                            icon="fa-users"
+                                            confirm="¿Desea enviar todos los clientes activos a SEPED?"/>
+                                    <field name="last_client_sync" readonly="1" widget="datetime"/>
+                                </div>
+                            </group>
+                            <group string="Proveedores">
+                                <div class="o_row mb-2">
+                                    <button name="action_sync_vendors"
+                                            type="object"
+                                            string="Sincronizar Proveedores"
+                                            class="btn-primary"
+                                            icon="fa-truck"
+                                            confirm="¿Desea enviar todos los proveedores activos a SEPED?"/>
+                                    <field name="last_vendor_sync" readonly="1" widget="datetime"/>
+                                </div>
+                            </group>
+                            <group string="Vendedores">
+                                <div class="o_row mb-2">
+                                    <button name="action_sync_vendedores"
+                                            type="object"
+                                            string="Sincronizar Vendedores"
+                                            class="btn-secondary"
+                                            icon="fa-id-card-o"
+                                            confirm="¿Desea enviar los vendedores activos a SEPED?"/>
+                                    <field name="last_vendedor_sync" readonly="1" widget="datetime"/>
+                                </div>
+                            </group>
+                        </page>
+
+                        <!-- ─── FACTURACION ─── -->
+                        <page string="Facturacion" name="tab_facturas">
+                            <group string="Facturas de Venta">
+                                <div class="o_row mb-2">
+                                    <button name="action_sync_invoices"
+                                            type="object"
+                                            string="Sincronizar Facturas (cabeceras + renglones)"
+                                            class="btn-primary"
+                                            icon="fa-file-text-o"
+                                            confirm="¿Desea sincronizar las facturas con SEPED?"/>
+                                    <field name="last_invoice_sync" readonly="1" widget="datetime"/>
+                                </div>
+                                <div class="o_row mb-2">
+                                    <button name="action_sync_ventares"
+                                            type="object"
+                                            string="Resumen de Ventas del Dia"
+                                            class="btn-secondary"
+                                            icon="fa-bar-chart"
+                                            confirm="¿Desea enviar el resumen de ventas del dia a SEPED?"/>
+                                    <field name="last_ventares_sync" readonly="1" widget="datetime"/>
+                                </div>
+                            </group>
+                            <group string="Cuentas por Cobrar / Pagar">
+                                <div class="o_row mb-2">
+                                    <button name="action_sync_cxc"
+                                            type="object"
+                                            string="Cuentas por Cobrar (CxC)"
+                                            class="btn-secondary"
+                                            icon="fa-money"
+                                            confirm="¿Desea enviar las Cuentas por Cobrar pendientes a SEPED?"/>
+                                    <field name="last_cxc_sync" readonly="1" widget="datetime"/>
+                                </div>
+                                <div class="o_row mb-2">
+                                    <button name="action_sync_cxp"
+                                            type="object"
+                                            string="Cuentas por Pagar (CxP)"
+                                            class="btn-secondary"
+                                            icon="fa-credit-card"
+                                            confirm="¿Desea enviar las Cuentas por Pagar pendientes a SEPED?"/>
+                                    <field name="last_cxp_sync" readonly="1" widget="datetime"/>
+                                </div>
+                            </group>
+                        </page>
+
+                        <!-- ─── FINANZAS ─── -->
+                        <page string="Finanzas" name="tab_finanzas">
+                            <group string="Bancos y Monedas">
+                                <div class="o_row mb-2">
+                                    <button name="action_sync_banks"
+                                            type="object"
+                                            string="Sincronizar Cuentas Bancarias"
+                                            class="btn-secondary"
+                                            icon="fa-university"
+                                            confirm="¿Desea enviar las cuentas bancarias a SEPED?"/>
+                                    <field name="last_bank_sync" readonly="1" widget="datetime"/>
+                                </div>
+                                <div class="o_row mb-2">
+                                    <button name="action_sync_monedas"
+                                            type="object"
+                                            string="Sincronizar Monedas y Tasas"
+                                            class="btn-secondary"
+                                            icon="fa-usd"
+                                            confirm="¿Desea enviar las monedas y tasas de cambio a SEPED?"/>
+                                    <field name="last_moneda_sync" readonly="1" widget="datetime"/>
+                                </div>
+                            </group>
+                        </page>
+
+                        <!-- ─── PEDIDOS SEPED → ODOO ─── -->
+                        <page string="Pedidos SEPED" name="tab_pedidos">
+                            <group string="Importar Pedidos desde SEPED">
+                                <p>Consulta los pedidos pendientes en SEPED e importalos como ordenes de venta en Odoo.</p>
+                                <div class="o_row mb-2">
+                                    <button name="action_fetch_orders"
+                                            type="object"
+                                            string="Obtener Pedidos Pendientes"
+                                            class="btn-primary"
+                                            icon="fa-download"
+                                            confirm="¿Desea consultar pedidos pendientes en SEPED e importarlos como borradores?"/>
+                                    <field name="last_order_fetch" readonly="1" widget="datetime"/>
+                                </div>
+                            </group>
+                        </page>
+
+                        <!-- ─── NOTAS ─── -->
+                        <page string="Notas" name="tab_notas">
+                            <group>
+                                <field name="note" nolabel="1" placeholder="Notas internas sobre esta configuracion..."/>
+                            </group>
+                        </page>
+
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action para abrir la configuración -->
+    <record id="action_seped_config" model="ir.actions.act_window">
+        <field name="name">Configuración SEPED</field>
+        <field name="res_model">seped.config</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                ¡Crea tu primera configuracion SEPED!
+            </p>
+            <p>
+                Ingresa la URL base, la API Key y el codigo de distribuidor
+                para comenzar a sincronizar productos, stock y clientes con SEPED.
+            </p>
+        </field>
+    </record>
+
+</odoo>
