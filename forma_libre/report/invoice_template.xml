@@ -10,7 +10,7 @@
                             <tr>
                                 <td style="width: 50%; vertical-align: top; padding-right: 10px; font-size: 9px;">
                                     <p><strong>Cliente:</strong> <t t-esc="doc.partner_id.name or ''"/></p>
-                                    <p><strong>R.I.F:</strong> <t t-esc="doc.partner_id.vat or ''"/></p>
+                                    <p><strong>R.I.F:</strong> <t t-esc="doc.partner_id.rif or ''"/></p>
                                     <p><strong>Direccion:</strong> <t t-esc="doc.partner_id.contact_address or ''"/></p>
                                     <p><strong>Telefono:</strong> <t t-esc="doc.partner_id.phone or ''"/></p>
                                 </td>
@@ -39,7 +39,7 @@
                                         <t t-esc="line.product_id.default_code or ''"/>
                                     </td>
                                     <td style="border: none; text-align: left; font-size: 9px;">
-                                        <t t-esc="line.product_id.name or ''"/>
+                                        <t t-esc="line.name or ''"/>
                                     </td>
                                     <td style="border: none; text-align: right; font-size: 9px;">
                                         <t t-esc="'%0.2f' % (line.quantity or 0.0)"/>

@@ -48,37 +48,42 @@ class AccountMove(models.Model):
         for rec in self:
             rec.show_print_dual_button = rec.move_type == 'out_invoice'
 
-    @api.depends('line_ids.price_subtotal', 'line_ids.tax_ids', 'tax_today')
+    @api.depends('line_ids.price_subtotal', 'line_ids.tax_ids', 'line_ids.price_total')
     def _compute_tax_amounts(self):
         for move in self:
             tax_16 = tax_8 = tax_31 = tax_exento = 0.0
             base_16 = base_8 = base_31 = 0.0
-    
-            # Obtener la tasa del día (si no existe, usar 1 para evitar división por cero)
-            exchange_rate = getattr(move, 'tax_today', 1.0) or 1.0
-    
+            tax_16_usd = tax_8_usd = tax_31_usd = tax_exento_usd = 0.0
+            base_16_usd = base_8_usd = base_31_usd = 0.0
+
             for line in move.line_ids.filtered(lambda l: l.display_type == 'product'):
                 subtotal = line.price_subtotal or 0.0
-    
+                subtotal_usd = getattr(line, 'price_subtotal_usd', 0.0) or 0.0
+
                 tax_list = line.tax_ids.filtered(lambda t: t.amount_type == 'percent')
-    
-                # Exento
+
                 if not tax_list or all(t.amount == 0 for t in tax_list):
                     tax_exento += subtotal
+                    tax_exento_usd += subtotal_usd
                 else:
                     for tax in tax_list:
                         rate = tax.amount
                         if rate == 16:
                             base_16 += subtotal
                             tax_16 += subtotal * (rate / 100)
+                            base_16_usd += subtotal_usd
+                            tax_16_usd += subtotal_usd * (rate / 100)
                         elif rate == 8:
                             base_8 += subtotal
                             tax_8 += subtotal * (rate / 100)
+                            base_8_usd += subtotal_usd
+                            tax_8_usd += subtotal_usd * (rate / 100)
                         elif rate == 31:
                             base_31 += subtotal
                             tax_31 += subtotal * (rate / 100)
-    
-            # Totales en bolívares
+                            base_31_usd += subtotal_usd
+                            tax_31_usd += subtotal_usd * (rate / 100)
+
             move.tax_16 = tax_16
             move.tax_8 = tax_8
             move.tax_31 = tax_31
@@ -88,18 +93,16 @@ class AccountMove(models.Model):
             move.base_31 = base_31
             move.total_imponible = base_16 + base_8 + base_31
             move.subtotal = tax_exento + move.total_imponible + tax_16 + tax_8 + tax_31
-    
-            # --- Conversión automática a USD ---
-            move.tax_16_usd = tax_16 / exchange_rate
-            move.tax_8_usd = tax_8 / exchange_rate
-            move.tax_31_usd = tax_31 / exchange_rate
-            move.tax_exento_usd = tax_exento / exchange_rate
-            move.base_16_usd = base_16 / exchange_rate
-            move.base_8_usd = base_8 / exchange_rate
-            move.base_31_usd = base_31 / exchange_rate
-            move.total_imponible_usd = move.total_imponible / exchange_rate
-            move.subtotal_usd = move.subtotal / exchange_rate
 
+            move.tax_16_usd = tax_16_usd
+            move.tax_8_usd = tax_8_usd
+            move.tax_31_usd = tax_31_usd
+            move.tax_exento_usd = tax_exento_usd
+            move.base_16_usd = base_16_usd
+            move.base_8_usd = base_8_usd
+            move.base_31_usd = base_31_usd
+            move.total_imponible_usd = base_16_usd + base_8_usd + base_31_usd
+            move.subtotal_usd = tax_exento_usd + move.total_imponible_usd + tax_16_usd + tax_8_usd + tax_31_usd
 
     def get_report_name(self):
         return f"Factura Fiscal - {self.name}"
