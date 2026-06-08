@@ -63,6 +63,7 @@
                                     <th style="text-align: left;">Producto</th>
                                     <th style="text-align: right;">Cantidad</th>
                                     <th style="text-align: right;">Precio</th>
+                                    <th style="text-align: right;">Precio Ref</th>
                                     <th style="text-align: center;">Dscto %</th>
                                     <th style="text-align: right;">Total</th>
                                 </tr>
@@ -80,6 +81,9 @@
                                     </td>
                                     <td style="border: none; text-align: right; font-size: 9px;">
                                         <t t-esc="'{:,.2f}'.format(line.price_unit).replace(',', 'X').replace('.', ',').replace('X', '.')"/>
+                                    </td>
+                                    <td style="border: none; text-align: right; font-size: 9px;">
+                                        <t t-esc="'{:,.2f}'.format(line.ref_unit or 0.0).replace(',', 'X').replace('.', ',').replace('X', '.')"/>
                                     </td>
                                     <td style="border: none; text-align: center; font-size: 9px;">
                                         <t t-esc="line.discount"/>
@@ -216,6 +220,28 @@
                                         <td><strong>Total General Ref:</strong></td>
                                         <td style="text-align: right;">
                                             <t t-esc="'{:,.2f}'.format(doc.amount_total_usd or 0.0).replace(',', 'X').replace('.', ',').replace('X', '.')"/>
+                                        </td>
+                                    </tr>
+                                    <!-- IGTF 3% -->
+                                    <tr>
+                                        <td><strong>IGTF 3% Bs.:</strong></td>
+                                        <td style="border-right: 1px solid black; text-align: right; padding-right: 10px;">
+                                            <t t-esc="'{:,.2f}'.format(doc.igtf or 0.0).replace(',', 'X').replace('.', ',').replace('X', '.')"/>
+                                        </td>
+                                        <td><strong>IGTF 3% Ref:</strong></td>
+                                        <td style="text-align: right;">
+                                            <t t-esc="'{:,.2f}'.format(doc.igtf_usd or 0.0).replace(',', 'X').replace('.', ',').replace('X', '.')"/>
+                                        </td>
+                                    </tr>
+                                    <!-- Total con IGTF -->
+                                    <tr>
+                                        <td><strong>Total con IGTF Bs.:</strong></td>
+                                        <td style="border-right: 1px solid black; text-align: right; padding-right: 10px;">
+                                            <t t-esc="'{:,.2f}'.format(doc.total_con_igtf or 0.0).replace(',', 'X').replace('.', ',').replace('X', '.')"/>
+                                        </td>
+                                        <td><strong>Total con IGTF Ref:</strong></td>
+                                        <td style="text-align: right;">
+                                            <t t-esc="'{:,.2f}'.format(doc.total_con_igtf_usd or 0.0).replace(',', 'X').replace('.', ',').replace('X', '.')"/>
                                         </td>
                                     </tr>
 
