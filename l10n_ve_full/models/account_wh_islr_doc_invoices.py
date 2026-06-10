@@ -539,8 +539,7 @@ class AccountWhIslrDocInvoices(models.Model):
 
         if not rate2:
             ut_obj = self.env['account.ut'].search([], order='id desc', limit=1)
-            #rate_brw = islr_rate_obj.browse(islr_rate_ids[0])
-
+            
             if islr_rate_ids.minimum == 83.33 and islr_rate_ids.name == 'PNRE':
                 valor = 0.0034
             else:
@@ -556,33 +555,29 @@ class AccountWhIslrDocInvoices(models.Model):
             }
 
             ut_obj = self.env['account.ut'].search([], order='id desc', limit=1)
-            base_ut = ut_obj
+            base_ut = base / ut_obj.amount if ut_obj and ut_obj.amount else 0.0
+            
             iwdl_ids = iwdl_obj.search(
-
                 [('partner_id', '=', inv_brw.partner_id.id),
                  ('concept_id', '=', concept_id),
-                 ('invoice_id', '!=', inv_brw.id)]) # need to exclude this
-                                                    # invoice from computation
-                 #('fiscalyear_id', '=',inv_brw.islr_wh_doc_id.fiscalyear_id.id)]
+                 ('invoice_id', '!=', inv_brw.id)]) 
 
-            # Previous amount Tax Unit for this partner in this fiscalyear with
-            # this concept
-            for iwdl_brw in iwdl_obj.browse(iwdl_ids):
+            for iwdl_brw in iwdl_ids:
                 base_ut += iwdl_brw.raw_base_ut
                 rate2['cumulative_base_ut'] += iwdl_brw.raw_base_ut
                 rate2['cumulative_tax_ut'] += iwdl_brw.raw_tax_ut
+                
             iwhd_ids = iwhd_obj.search(
-
                 [('partner_id', '=', inv_brw.partner_id.id),
                  ('concept_id', '=', concept_id)])
-            for iwhd_brw in iwhd_obj.browse( iwhd_ids):
+                 
+            for iwhd_brw in iwhd_ids:
                 base_ut += iwhd_brw.raw_base_ut
                 rate2['cumulative_base_ut'] += iwhd_brw.raw_base_ut
                 rate2['cumulative_tax_ut'] += iwhd_brw.raw_tax_ut
+                
             found_rate = False
-            for rate_brw in islr_rate_obj.browse(
-                     islr_rate_ids):
-
+            for rate_brw in islr_rate_ids:
                 if rate_brw.minimum > base_ut * rate_brw.base / 100.0:
                     continue
                 if islr_rate_ids.minimum == 83.33 and islr_rate_ids.name == 'PNRE':
@@ -596,9 +591,10 @@ class AccountWhIslrDocInvoices(models.Model):
                 found_rate = True
                 rate2['subtrahend'] = rate_brw.subtract
                 break
+                
             if not found_rate:
                 msg += _(' Para unidades impositivas mayores que cero')
-                raise UserError(_('Falta la configuración'), msg)
+                raise UserError(_('Falta la configuración \n %s') % msg)
         return (islr_rate_ids.base, rate_brw_minimum, islr_rate_ids.wh_perc,
                 rate_brw_subtract, islr_rate_ids.code, islr_rate_ids.id, islr_rate_ids.name,
                 rate2) if msg_nature == 'Natural' else (islr_rate_ids.base, 0, islr_rate_ids.wh_perc,
