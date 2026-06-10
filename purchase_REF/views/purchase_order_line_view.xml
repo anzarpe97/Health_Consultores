@@ -17,6 +17,10 @@
             <xpath expr="//field[@name='order_line']//field[@name='price_subtotal']" position="after">
                 <field name="ref" string="REF Subtotal" optional="show"/>
             </xpath>
+            <!-- Cambiamos Orden de compra a Orden de servicio -->
+            <xpath expr="//span[@invisible=&quot;state not in ('purchase', 'done')&quot;]" position="replace">
+                <span class="o_form_label" invisible="state not in ('purchase', 'done')">Orden de servicio </span>
+            </xpath>
         </field>
     </record>
 </odoo>
