@@ -46,12 +46,14 @@ class GenericTaxReportCustomHandler(models.AbstractModel):
             'base': {column_group_key: 0.0 for column_group_key in options['column_groups']},
             'tax_deductible': {column_group_key: 0.0 for column_group_key in options['column_groups']},
             'tax_non_deductible': {column_group_key: 0.0 for column_group_key in options['column_groups']},
+            'tax_due': {column_group_key: 0.0 for column_group_key in options['column_groups']},
             'children': defaultdict(lambda: {  # key: tax_id
                 'base_amount': {column_group_key: 0.0 for column_group_key in options['column_groups']},
                 'tax_amount': {column_group_key: 0.0 for column_group_key in options['column_groups']},
                 'base': {column_group_key: 0.0 for column_group_key in options['column_groups']},
                 'tax_deductible': {column_group_key: 0.0 for column_group_key in options['column_groups']},
                 'tax_non_deductible': {column_group_key: 0.0 for column_group_key in options['column_groups']},
+                'tax_due': {column_group_key: 0.0 for column_group_key in options['column_groups']},
             }),
         })
 
@@ -256,8 +258,10 @@ class GenericTaxReportCustomHandler(models.AbstractModel):
 
                 results[tax_type_tax_use]['tax_deductible'][column_group_key] += row['tax_amount']
                 results[tax_type_tax_use]['tax_amount'][column_group_key] += row['tax_amount']
+                results[tax_type_tax_use]['tax_due'][column_group_key] += row['tax_amount']
                 results[tax_type_tax_use]['children'][tax_id]['tax_deductible'][column_group_key] += row['tax_amount']
                 results[tax_type_tax_use]['children'][tax_id]['tax_amount'][column_group_key] += row['tax_amount']
+                results[tax_type_tax_use]['children'][tax_id]['tax_due'][column_group_key] += row['tax_amount']
 
         return results
 
