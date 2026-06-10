@@ -570,8 +570,8 @@ class AccountReport(models.AbstractModel):
         }
         self.env.cr.execute(sql, params)
 
-    def _get_lines(self, options, line_id=None, **kwargs):
-        lines = super()._get_lines(options, line_id=line_id, **kwargs)
+    def _get_lines(self, options, *args, **kwargs):
+        lines = super()._get_lines(options, *args, **kwargs)
         
         is_general_ledger = getattr(self, 'custom_handler_model_name', getattr(self.custom_handler_model_id, 'model', '')) == 'account.general.ledger.report.handler'
         
