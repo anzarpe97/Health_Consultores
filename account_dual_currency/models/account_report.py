@@ -251,6 +251,14 @@ class AccountReport(models.AbstractModel):
         }
         self.env.context = new_context
 
+        if getattr(self, 'custom_handler_model_name', getattr(self.custom_handler_model_id, 'model', '')) == 'account.general.ledger.report.handler':
+            cols = options.get('columns', [])
+            if not any(c.get('expression_label') == 'saldo_inicial' for c in cols):
+                debit_idx = next((i for i, c in enumerate(cols) if c.get('expression_label') == 'debit'), 0)
+                new_col = {'name': 'Saldo inicial', 'figure_type': 'monetary', 'class': 'number', 'expression_label': 'saldo_inicial'}
+                cols.insert(debit_idx, new_col)
+                options['columns'] = cols
+
         return options
 
     # antiguo metodo de v16, reemplazado por el nuevo de v17
@@ -559,3 +567,75 @@ class AccountReport(models.AbstractModel):
             'journal_ids': selected_journals,
         }
         self.env.cr.execute(sql, params)
+
+    def _get_lines(self, options, line_id=None):
+        lines = super()._get_lines(options, line_id=line_id)
+        
+        is_general_ledger = getattr(self, 'custom_handler_model_name', getattr(self.custom_handler_model_id, 'model', '')) == 'account.general.ledger.report.handler'
+        
+        if is_general_ledger:
+            cols = options.get('columns', [])
+            saldo_idx = next((i for i, c in enumerate(cols) if c.get('expression_label') == 'saldo_inicial'), None)
+            
+            if saldo_idx is not None:
+                def parse_line_id(lid):
+                    if not lid: return None, None
+                    if hasattr(self, '_get_model_info_from_id'):
+                        try:
+                            return self._get_model_info_from_id(lid)
+                        except Exception:
+                            pass
+                    if hasattr(self, '_parse_line_id'):
+                        try:
+                            parsed = self._parse_line_id(lid)
+                            if parsed and isinstance(parsed, list):
+                                return parsed[-1].get('model'), parsed[-1].get('id')
+                        except Exception:
+                            pass
+                    if 'account.account' in lid:
+                        # Fallback parsing
+                        import re
+                        m = re.search(r'account\.account[~|]+(\d+)', str(lid))
+                        if m:
+                            return 'account.account', int(m.group(1))
+                    return None, None
+
+                account_ids = []
+                for line in lines:
+                    model, res_id = parse_line_id(line.get('id', ''))
+                    if model == 'account.account' and res_id:
+                        account_ids.append(res_id)
+
+                initial_balances = {}
+                handler = self.env['account.general.ledger.report.handler']
+                if account_ids and hasattr(handler, '_get_initial_balance_values'):
+                    initial_balances = handler._get_initial_balance_values(self, account_ids, options)
+
+                for line in lines:
+                    if 'columns' not in line:
+                        continue
+                    
+                    model, res_id = parse_line_id(line.get('id', ''))
+                    
+                    saldo_val = ''
+                    formatted_val = ''
+                    
+                    if model == 'account.account' and res_id in initial_balances:
+                        account_tuple = initial_balances[res_id]
+                        if len(account_tuple) > 1 and account_tuple[1]:
+                            col_group_dict = account_tuple[1]
+                            if col_group_dict:
+                                first_col_group = list(col_group_dict.keys())[0]
+                                vals = col_group_dict[first_col_group]
+                                
+                                currency_dif = options.get('currency_dif')
+                                if currency_dif == options.get('currency_id_company_name'):
+                                    saldo_val = vals.get('balance', 0.0)
+                                else:
+                                    saldo_val = vals.get('amount_currency', 0.0)
+                                
+                                formatted_val = self.format_value(options, saldo_val, figure_type='monetary')
+                    
+                    line['columns'].insert(saldo_idx, {'name': formatted_val, 'no_format': saldo_val, 'class': 'number'})
+
+        return lines
