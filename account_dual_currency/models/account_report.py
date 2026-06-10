@@ -255,7 +255,9 @@ class AccountReport(models.AbstractModel):
             cols = options.get('columns', [])
             if not any(c.get('expression_label') == 'saldo_inicial' for c in cols):
                 debit_idx = next((i for i, c in enumerate(cols) if c.get('expression_label') == 'debit'), 0)
-                new_col = {'name': 'Saldo inicial', 'figure_type': 'monetary', 'class': 'number', 'expression_label': 'saldo_inicial'}
+                debit_col = cols[debit_idx] if len(cols) > debit_idx else {}
+                column_group_key = debit_col.get('column_group_key')
+                new_col = {'name': 'Saldo inicial', 'figure_type': 'monetary', 'class': 'number', 'expression_label': 'saldo_inicial', 'column_group_key': column_group_key}
                 cols.insert(debit_idx, new_col)
                 options['columns'] = cols
 
