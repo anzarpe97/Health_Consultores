@@ -10,7 +10,6 @@
         # 'security/ir.model.access.csv',      # luego los permisos
         'views/purchase_order_line_view.xml',
         'views/sale_order_line_view.xml',
-        'views/report_purchaseorder_document_inherit.xml',
         # 'views/account_invoice_price_check_wizard.xml',
         # 'views/account_move_price_approval_view.xml',
     ],
