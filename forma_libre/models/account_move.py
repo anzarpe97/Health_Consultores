@@ -17,6 +17,8 @@ class AccountMove(models.Model):
     base_31 = fields.Monetary(string="Base Imponible 31%", compute="_compute_tax_amounts", store=True)
     total_imponible = fields.Monetary(string="Total Imponible", compute="_compute_tax_amounts", store=True)
     subtotal = fields.Monetary(string="SubTotal", compute="_compute_tax_amounts", store=True)
+    igtf = fields.Monetary(string="IGTF (3%)", compute="_compute_tax_amounts", store=True)
+    total_con_igtf = fields.Monetary(string="Total con IGTF", compute="_compute_tax_amounts", store=True)
 
     # Campos en dólares
     tax_16_usd = fields.Monetary(string="IVA 16% (USD)", compute="_compute_tax_amounts", store=True, currency_field='usd_currency_id')
@@ -28,6 +30,8 @@ class AccountMove(models.Model):
     base_31_usd = fields.Monetary(string="Base Imponible 31% (USD)", compute="_compute_tax_amounts", store=True, currency_field='usd_currency_id')
     total_imponible_usd = fields.Monetary(string="Total Imponible (USD)", compute="_compute_tax_amounts", store=True, currency_field='usd_currency_id')
     subtotal_usd = fields.Monetary(string="SubTotal (USD)", compute="_compute_tax_amounts", store=True, currency_field='usd_currency_id')
+    igtf_usd = fields.Monetary(string="IGTF (3%) (USD)", compute="_compute_tax_amounts", store=True, currency_field='usd_currency_id')
+    total_con_igtf_usd = fields.Monetary(string="Total con IGTF (USD)", compute="_compute_tax_amounts", store=True, currency_field='usd_currency_id')
 
     # Moneda USD
     usd_currency_id = fields.Many2one('res.currency', string="Moneda USD", default=lambda self: self.env.ref('base.USD'))
@@ -93,6 +97,8 @@ class AccountMove(models.Model):
             move.base_31 = base_31
             move.total_imponible = base_16 + base_8 + base_31
             move.subtotal = tax_exento + move.total_imponible + tax_16 + tax_8 + tax_31
+            move.igtf = move.amount_total * 0.03
+            move.total_con_igtf = move.amount_total + move.igtf
 
             move.tax_16_usd = tax_16_usd
             move.tax_8_usd = tax_8_usd
@@ -103,6 +109,8 @@ class AccountMove(models.Model):
             move.base_31_usd = base_31_usd
             move.total_imponible_usd = base_16_usd + base_8_usd + base_31_usd
             move.subtotal_usd = tax_exento_usd + move.total_imponible_usd + tax_16_usd + tax_8_usd + tax_31_usd
+            move.igtf_usd = (move.amount_total_usd or 0.0) * 0.03
+            move.total_con_igtf_usd = (move.amount_total_usd or 0.0) + move.igtf_usd
 
     def get_report_name(self):
         return f"Factura Fiscal - {self.name}"

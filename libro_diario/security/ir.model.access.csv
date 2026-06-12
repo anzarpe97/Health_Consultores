@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_custom_trial_balance_handler,custom.trial.balance.handler,model_custom_trial_balance_handler,account.group_account_user,1,0,0,0
+access_custom_trial_balance_analysis,custom.trial.balance.analysis,model_custom_trial_balance_analysis,account.group_account_user,1,0,0,0
+access_libro_diario_wizard,libro.diario.wizard,model_libro_diario_wizard,account.group_account_user,1,1,1,1
