@@ -653,32 +653,39 @@ class AccountReport(models.AbstractModel):
                             first_col_group = list(col_group_dict.keys())[0]
                             vals = col_group_dict[first_col_group]
                             if isinstance(vals, dict):
-                                # _get_initial_balance_values already uses
-                                # balance_usd when in USD mode, so 'balance'
-                                # always has the correct value for the
-                                # selected currency.
                                 saldo_val = vals.get('balance', 0.0)
                                 formatted_val = self.format_value(options, saldo_val, figure_type='monetary')
                 
-                line['columns'].insert(saldo_idx, {
+                col_data = {
                     'name': formatted_val,
                     'no_format': saldo_val,
                     'class': 'number',
-                })
+                }
+                if len(line['columns']) > saldo_idx:
+                    line['columns'][saldo_idx] = col_data
+                else:
+                    line['columns'].insert(saldo_idx, col_data)
             elif _is_detail_line(lid):
-                # Move line detail: insert empty cell to maintain alignment
-                line['columns'].insert(saldo_idx, {
+                # Move line detail: empty cell
+                col_data = {
                     'name': '',
                     'no_format': '',
                     'class': 'number',
-                })
+                }
+                if len(line['columns']) > saldo_idx:
+                    line['columns'][saldo_idx] = col_data
+                else:
+                    line['columns'].insert(saldo_idx, col_data)
             else:
-                # Total lines, load-more lines, other structural lines:
-                # insert empty cell to maintain alignment
-                line['columns'].insert(saldo_idx, {
+                # Other structural lines: empty cell
+                col_data = {
                     'name': '',
                     'no_format': '',
                     'class': 'number',
-                })
+                }
+                if len(line['columns']) > saldo_idx:
+                    line['columns'][saldo_idx] = col_data
+                else:
+                    line['columns'].insert(saldo_idx, col_data)
 
         return lines
