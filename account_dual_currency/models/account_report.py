@@ -575,69 +575,110 @@ class AccountReport(models.AbstractModel):
         
         is_general_ledger = getattr(self, 'custom_handler_model_name', getattr(self.custom_handler_model_id, 'model', '')) == 'account.general.ledger.report.handler'
         
-        if is_general_ledger:
-            cols = options.get('columns', [])
-            saldo_idx = next((i for i, c in enumerate(cols) if c.get('expression_label') == 'saldo_inicial'), None)
+        if not is_general_ledger:
+            return lines
+
+        cols = options.get('columns', [])
+        saldo_idx = next((i for i, c in enumerate(cols) if c.get('expression_label') == 'saldo_inicial'), None)
+        
+        if saldo_idx is None:
+            return lines
+
+        # ── Collect account IDs from account-level lines ──────────
+        import re
+        def _extract_account_id(lid):
+            """Extract account.account id from a report line id string."""
+            if not lid:
+                return None
+            lid_str = str(lid)
+            # Odoo 17 line IDs look like:
+            #   ~account.report~X|~account.account~123  (account header)
+            #   ~account.report~X|~account.account~123|~account.move.line~456 (aml detail)
+            # We want to detect lines that are strictly account-level (no aml part)
+            if 'account.account' in lid_str:
+                m = re.search(r'account\.account[~|]+(\d+)', lid_str)
+                if m:
+                    return int(m.group(1))
+            return None
+
+        def _is_account_line(lid):
+            """Check if this line is an account-level header (not a move line detail)."""
+            if not lid:
+                return False
+            lid_str = str(lid)
+            # Account-level: contains account.account but NOT account.move.line
+            return 'account.account' in lid_str and 'account.move.line' not in lid_str
+
+        def _is_detail_line(lid):
+            """Check if this line is a move line detail."""
+            if not lid:
+                return False
+            return 'account.move.line' in str(lid)
+
+        # Collect all account IDs for initial balance lookup
+        account_ids = []
+        for line in lines:
+            lid = line.get('id', '')
+            if _is_account_line(lid):
+                acc_id = _extract_account_id(lid)
+                if acc_id and acc_id not in account_ids:
+                    account_ids.append(acc_id)
+
+        # Fetch initial balances
+        initial_balances = {}
+        handler = self.env['account.general.ledger.report.handler']
+        if account_ids and hasattr(handler, '_get_initial_balance_values'):
+            try:
+                initial_balances = handler._get_initial_balance_values(self, account_ids, options)
+            except Exception:
+                pass
+
+        # ── Insert the saldo_inicial column value into each line ──
+        for line in lines:
+            if 'columns' not in line:
+                continue
             
-            if saldo_idx is not None:
-                def parse_line_id(lid):
-                    if not lid: return None, None
-                    if hasattr(self, '_get_model_info_from_id'):
-                        try:
-                            return self._get_model_info_from_id(lid)
-                        except Exception:
-                            pass
-                    if hasattr(self, '_parse_line_id'):
-                        try:
-                            parsed = self._parse_line_id(lid)
-                            if parsed and isinstance(parsed, list):
-                                return parsed[-1].get('model'), parsed[-1].get('id')
-                        except Exception:
-                            pass
-                    if 'account.account' in lid:
-                        # Fallback parsing
-                        import re
-                        m = re.search(r'account\.account[~|]+(\d+)', str(lid))
-                        if m:
-                            return 'account.account', int(m.group(1))
-                    return None, None
-
-                account_ids = []
-                for line in lines:
-                    model, res_id = parse_line_id(line.get('id', ''))
-                    if model == 'account.account' and res_id:
-                        account_ids.append(res_id)
-
-                initial_balances = {}
-                handler = self.env['account.general.ledger.report.handler']
-                if account_ids and hasattr(handler, '_get_initial_balance_values'):
-                    initial_balances = handler._get_initial_balance_values(self, account_ids, options)
-
-                for line in lines:
-                    if 'columns' not in line:
-                        continue
-                    
-                    model, res_id = parse_line_id(line.get('id', ''))
-                    
-                    saldo_val = ''
-                    formatted_val = ''
-                    
-                    if model == 'account.account' and res_id in initial_balances:
-                        account_tuple = initial_balances[res_id]
-                        if len(account_tuple) > 1 and account_tuple[1]:
-                            col_group_dict = account_tuple[1]
-                            if col_group_dict:
-                                first_col_group = list(col_group_dict.keys())[0]
-                                vals = col_group_dict[first_col_group]
-                                
-                                currency_dif = options.get('currency_dif')
-                                if currency_dif == options.get('currency_id_company_name'):
-                                    saldo_val = vals.get('balance', 0.0)
-                                else:
-                                    saldo_val = vals.get('amount_currency', 0.0)
-                                
+            lid = line.get('id', '')
+            saldo_val = 0.0
+            formatted_val = ''
+            
+            if _is_account_line(lid):
+                # Account header line: show the initial balance
+                acc_id = _extract_account_id(lid)
+                if acc_id and acc_id in initial_balances:
+                    account_tuple = initial_balances[acc_id]
+                    if len(account_tuple) > 1 and account_tuple[1]:
+                        col_group_dict = account_tuple[1]
+                        if col_group_dict:
+                            first_col_group = list(col_group_dict.keys())[0]
+                            vals = col_group_dict[first_col_group]
+                            if isinstance(vals, dict):
+                                # _get_initial_balance_values already uses
+                                # balance_usd when in USD mode, so 'balance'
+                                # always has the correct value for the
+                                # selected currency.
+                                saldo_val = vals.get('balance', 0.0)
                                 formatted_val = self.format_value(options, saldo_val, figure_type='monetary')
-                    
-                    line['columns'].insert(saldo_idx, {'name': formatted_val, 'no_format': saldo_val, 'class': 'number'})
+                
+                line['columns'].insert(saldo_idx, {
+                    'name': formatted_val,
+                    'no_format': saldo_val,
+                    'class': 'number',
+                })
+            elif _is_detail_line(lid):
+                # Move line detail: insert empty cell to maintain alignment
+                line['columns'].insert(saldo_idx, {
+                    'name': '',
+                    'no_format': '',
+                    'class': 'number',
+                })
+            else:
+                # Total lines, load-more lines, other structural lines:
+                # insert empty cell to maintain alignment
+                line['columns'].insert(saldo_idx, {
+                    'name': '',
+                    'no_format': '',
+                    'class': 'number',
+                })
 
         return lines
