@@ -99,7 +99,7 @@
                             <th width="8%" style="text-align:center;background-color:#A9F5F2;border:1px solid #000;padding-top:5px;padding-bottom:3px;">
                                 Nro. Factura
                             </th>
-                            <th width="8%" style="text-align:center;background-color:#A9F5F2;border:1px solid #000;padding-top:5px;padding-bottom:3px;">
+                            <th width="12%" style="text-align:center;background-color:#A9F5F2;border:1px solid #000;padding-top:5px;padding-bottom:3px;">
                                 Nro. Control
                             </th>
                             <th width="8%" style="text-align:center;background-color:#A9F5F2;border:1px solid #000;padding-top:5px;padding-bottom:3px;">
@@ -173,7 +173,7 @@
                                     <span t-esc="d.wh_lines.invoice_id.supplier_invoice_number"/>
                                 </t>
                             </td>
-                            <td style="text-align:center;border:1px solid #000;padding-top:5px;padding-bottom:3px;">
+                            <td width="12%" style="text-align:center;border:1px solid #000;padding-top:5px;padding-bottom:3px;">
                                 <span t-esc="inv_nro_ctrl"/>
                             </td>
                             <td style="text-align:center;border:1px solid #000;padding-top:5px;padding-bottom:3px;">
