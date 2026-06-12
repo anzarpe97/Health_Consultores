@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_libro_diario_document">
+        <t t-call="web.html_container">
+            <t t-call="web.basic_layout">
+                <style>
+                    .header {
+                        font-family: Arial, sans-serif;
+                        font-size: 12px;
+                        border-bottom: 2px solid black;
+                        margin-bottom: 20px;
+                        padding-bottom: 15px;
+                    }   
+                    .footer {
+                        font-family: Arial, sans-serif;
+                        font-size: 10px;
+                        text-align: center;
+                        border-top: 1px solid black;
+                        padding-top: 5px;
+                    }
+                    .page {
+                        font-family: Arial, sans-serif;
+                        font-size: 14px;
+                    }
+                </style>
+
+                <div class="header">
+                    <div class="row">
+                        <div class="col-12 text-left">
+                            <ul class="list-unstyled">
+                                <li><strong t-field="company.name" style="font-size: 14px;"/></li>
+                                <li>
+                                    <span t-if="company.street" t-field="company.street"/>
+                                    <span t-if="company.street2" t-field="company.street2"/>
+                                </li>
+                                <li>
+                                    <span t-if="company.city" t-field="company.city"/>
+                                    <span t-if="company.state_id" t-field="company.state_id.name"/>
+                                    <span t-if="company.zip" t-field="company.zip"/>
+                                </li>
+                                <li>
+                                    <span t-if="company.country_id" t-field="company.country_id.name"/>
+                                </li>
+                                <li>RIF: <span t-field="company.vat"/></li>
+                            </ul>
+                            <div style="font-weight: bold; font-size: 16px; margin-top: 5px;">
+                                Diario Legal
+                            </div>
+                            <div>
+                                Periodo <span t-esc="date_from" t-options='{"widget": "date", "format": "dd/MM/yyyy"}'/> - <span t-esc="date_to" t-options='{"widget": "date", "format": "dd/MM/yyyy"}'/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="footer">
+                    <!-- Clean footer as requested -->
+                </div>
+
+                <div class="page">
+                    <!-- Removed Date Header Row as requested -->
+                    <div style="margin-top: 20px;"></div>
+
+                    <table class="table table-sm table-borderless" style="width: 100%;">
+                        <thead style="border-bottom: 1px solid black; font-weight: bold;">
+                            <tr>
+                                <th style="width: 15%;">Código</th> 
+                                <th style="width: 55%;"></th>
+                                <th style="width: 15%; text-align: center;">Débito</th>
+                                <th style="width: 15%; text-align: center;">Crédito</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <t t-foreach="lines" t-as="line">
+                                <tr>
+                                    <td>
+                                        <span t-esc="line['account_code']"/>
+                                    </td>
+                                    <td>
+                                        <span t-esc="line['account_name']"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <t t-if="line['total_debit'] &gt; 0">
+                                            <span t-esc="line['total_debit']" t-options='{"widget": "monetary", "display_currency": company.currency_id}'/>
+                                        </t>
+                                    </td>
+                                    <td class="text-center">
+                                        <t t-if="line['total_credit'] &gt; 0">
+                                            <span t-esc="line['total_credit']" t-options='{"widget": "monetary", "display_currency": company.currency_id}'/>
+                                        </t>
+                                    </td>
+                                </tr>
+                            </t>
+                            
+                            <!-- Total Line -->
+                            <tr style="border-top: 1px solid black; font-weight: bold;">
+                                <td colspan="2" class="text-right">Total</td>
+                                <td class="text-center">
+                                    <span t-esc="total_debit" t-options='{"widget": "monetary", "display_currency": company.currency_id}'/>
+                                </td>
+                                <td class="text-center">
+                                    <span t-esc="total_credit" t-options='{"widget": "monetary", "display_currency": company.currency_id}'/>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+</odoo>

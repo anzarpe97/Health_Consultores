@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- Search View -->
+        <record id="view_custom_trial_balance_analysis_search" model="ir.ui.view">
+            <field name="name">custom.trial.balance.analysis.search</field>
+            <field name="model">custom.trial.balance.analysis</field>
+            <field name="arch" type="xml">
+                <search string="Análisis de Movimientos">
+                    <field name="date"/>
+                    <field name="account_id"/>
+                    <field name="journal_id"/>
+                    <filter string="Esta Periodo" name="this_period" date="date"/>
+                    <separator/>
+                    <filter string="Por Cuenta" name="group_by_account" context="{'group_by': 'account_id'}"/>
+                    <filter string="Por Diario" name="group_by_journal" context="{'group_by': 'journal_id'}"/>
+                    <filter string="Por Fecha" name="group_by_date" context="{'group_by': 'date:month'}"/>
+                </search>
+            </field>
+        </record>
+
+        <!-- Tree View -->
+        <record id="view_custom_trial_balance_analysis_tree" model="ir.ui.view">
+            <field name="name">custom.trial.balance.analysis.tree</field>
+            <field name="model">custom.trial.balance.analysis</field>
+            <field name="arch" type="xml">
+                <tree string="Análisis de Movimientos" expand="1">
+                    <field name="date"/>
+                    <field name="account_code" optional="show"/>
+                    <field name="account_id"/>
+                    <field name="journal_id" optional="hide"/>
+                    <field name="move_id" optional="hide"/>
+                    <field name="debit" sum="Total Debe"/>
+                    <field name="credit" sum="Total Haber"/>
+                    <field name="balance" optional="hide" sum="Total Balance"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Pivot View -->
+        <record id="view_custom_trial_balance_analysis_pivot" model="ir.ui.view">
+            <field name="name">custom.trial.balance.analysis.pivot</field>
+            <field name="model">custom.trial.balance.analysis</field>
+            <field name="arch" type="xml">
+                <pivot string="Análisis de Movimientos" sample="1">
+                    <field name="account_id" type="row"/>
+                    <field name="debit" type="measure"/>
+                    <field name="credit" type="measure"/>
+                </pivot>
+            </field>
+        </record>
+
+        <!-- Action -->
+        <record id="action_custom_trial_balance_analysis" model="ir.actions.act_window">
+            <field name="name">Análisis de Movimientos (Debe/Haber)</field>
+            <field name="res_model">custom.trial.balance.analysis</field>
+            <field name="view_mode">tree,pivot</field>
+            <field name="search_view_id" ref="view_custom_trial_balance_analysis_search"/>
+            <field name="context">{'search_default_group_by_account': 1, 'search_default_this_period': 1}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    No hay movimientos para este período.
+                </p>
+            </field>
+        </record>
+
+        <!-- Menu -->
+        <!-- <menuitem id="menu_custom_trial_balance_analysis"
+                  name="Análisis de Movimientos (Debe/Haber)"
+                  action="action_custom_trial_balance_analysis"
+                  parent="account.menu_finance_reports"
+                  sequence="15"/> -->
+
+    </data>
+</odoo>
