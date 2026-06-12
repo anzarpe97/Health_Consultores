@@ -96,32 +96,32 @@
                             <br/>
                             <table style="font-size:14px;" width="100%; margin-top:30px;">
                                 <tr style="font-weight: bold;">
-                                    <th style="width:10%;text-align:center;background-color:#A9F5F2;border:1px solid #000;padding-top:10px;padding-right:10px;padding-bottom:3px;padding-left:10px">
+                                    <th style="width:8%;text-align:center;background-color:#A9F5F2;border:1px solid #000;padding-top:10px;padding-right:10px;padding-bottom:3px;padding-left:10px">
                                         Fecha Factura
                                     </th>
                                     <th style="width:9%;text-align:center;background-color:#A9F5F2;border:1px solid #000;padding-top:10px;padding-right:10px;padding-bottom:3px;padding-left:10px">
                                         N° de Factura
                                     </th>
-                                    <th style="width:13%;text-align:center;background-color:#A9F5F2;border:1px solid #000;padding-top:10px;padding-right:10px;padding-bottom:3px;padding-left:10px">
+                                    <th style="width:16%;text-align:center;background-color:#A9F5F2;border:1px solid #000;padding-top:10px;padding-right:10px;padding-bottom:3px;padding-left:10px">
                                         N° Control
                                     </th>
-                                    <th style="width:32%;text-align:center;background-color:#A9F5F2;border:1px solid #000;padding-top:10px;padding-right:10px;padding-bottom:3px;padding-left:10px">
+                                    <th style="width:25%;text-align:center;background-color:#A9F5F2;border:1px solid #000;padding-top:10px;padding-right:10px;padding-bottom:3px;padding-left:10px">
                                         Concepto de Retención
                                     </th>
-                                    <th style="width:8%;text-align:center;background-color:#A9F5F2;border:1px solid #000;padding-top:10px;padding-right:10px;padding-bottom:3px;padding-left:10px">
+                                    <th style="width:5%;text-align:center;background-color:#A9F5F2;border:1px solid #000;padding-top:10px;padding-right:10px;padding-bottom:3px;padding-left:10px">
                                         % de Retención
                                     </th>
-                                    <th style="width:8%;text-align:center;background-color:#A9F5F2;border:1px solid #000;padding-top:10px;padding-right:10px;padding-bottom:3px;padding-left:10px">
+                                    <th style="width:9%;text-align:center;background-color:#A9F5F2;border:1px solid #000;padding-top:10px;padding-right:10px;padding-bottom:3px;padding-left:10px">
                                         Monto Total del Documento
                                     </th>
-                                    <th style="width:8%;text-align:center;background-color:#A9F5F2;border:1px solid #000;padding-top:10px;padding-right:10px;padding-bottom:3px;padding-left:10px">
+                                    <th style="width:9%;text-align:center;background-color:#A9F5F2;border:1px solid #000;padding-top:10px;padding-right:10px;padding-bottom:3px;padding-left:10px">
                                         Base
                                     </th>
-                                    <th style="width:8%;text-align:center;background-color:#A9F5F2;border:1px solid #000;padding-top:10px;padding-right:10px;padding-bottom:3px;padding-left:10px">
+                                    <th style="width:9%;text-align:center;background-color:#A9F5F2;border:1px solid #000;padding-top:10px;padding-right:10px;padding-bottom:3px;padding-left:10px">
                                         Sustraendo
                                     </th>
 
-                                    <th style="width:8%;text-align:center;background-color:#A9F5F2;border:1px solid #000;padding-top:10px;padding-right:10px;padding-bottom:3px;padding-left:10px">
+                                    <th style="width:10%;text-align:center;background-color:#A9F5F2;border:1px solid #000;padding-top:10px;padding-right:10px;padding-bottom:3px;padding-left:10px">
                                         ISLR Monto Retenido
                                     </th>
                                 </tr>
@@ -142,7 +142,7 @@
                                     <td style="text-align:center;border:1px solid #000;">
                                         <span t-esc="'{:,.2f}'.format(model._get_islr_wh_retencion_islr(inv)).replace(',', '@').replace('.', ',').replace('@', '.')"/>
                                     </td>
-                                    <td style="font-size:13px;width:9%;text-align:center;border:1px solid #000;">
+                                    <td style="font-size:13px;text-align:center;border:1px solid #000;">
                                         <span t-esc="'{:,.2f}'.format(total_doc).replace(',', '@').replace('.', ',').replace('@', '.')"/>
                                     </td>
                                     <td style="text-align:center;border:1px solid #000;">
