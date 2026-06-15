@@ -43,9 +43,17 @@ class GenericTaxReportCustomHandler(models.AbstractModel):
         results = defaultdict(lambda: {  # key: type_tax_use
             'base_amount': {column_group_key: 0.0 for column_group_key in options['column_groups']},
             'tax_amount': {column_group_key: 0.0 for column_group_key in options['column_groups']},
+            'base': {column_group_key: 0.0 for column_group_key in options['column_groups']},
+            'tax_deductible': {column_group_key: 0.0 for column_group_key in options['column_groups']},
+            'tax_non_deductible': {column_group_key: 0.0 for column_group_key in options['column_groups']},
+            'tax_due': {column_group_key: 0.0 for column_group_key in options['column_groups']},
             'children': defaultdict(lambda: {  # key: tax_id
                 'base_amount': {column_group_key: 0.0 for column_group_key in options['column_groups']},
                 'tax_amount': {column_group_key: 0.0 for column_group_key in options['column_groups']},
+                'base': {column_group_key: 0.0 for column_group_key in options['column_groups']},
+                'tax_deductible': {column_group_key: 0.0 for column_group_key in options['column_groups']},
+                'tax_non_deductible': {column_group_key: 0.0 for column_group_key in options['column_groups']},
+                'tax_due': {column_group_key: 0.0 for column_group_key in options['column_groups']},
             }),
         })
 
@@ -158,11 +166,15 @@ class GenericTaxReportCustomHandler(models.AbstractModel):
                         group_tax_id = child_to_group_of_taxes[row['tax_id']]
                         if group_tax_id not in group_of_taxes_with_extra_base_amount:
                             group_tax_info = group_of_taxes_info[group_tax_id]
+                            results[group_tax_info['type_tax_use']]['children'][group_tax_id]['base'][
+                                column_group_key] += row['base_amount']
                             results[group_tax_info['type_tax_use']]['children'][group_tax_id]['base_amount'][
                                 column_group_key] += row['base_amount']
                             group_of_taxes_with_extra_base_amount.add(group_tax_id)
                     else:
                         tax_type_tax_use = row['src_group_tax_type_tax_use'] or row['src_tax_type_tax_use']
+                        results[tax_type_tax_use]['children'][row['tax_id']]['base'][column_group_key] += row[
+                            'base_amount']
                         results[tax_type_tax_use]['children'][row['tax_id']]['base_amount'][column_group_key] += row[
                             'base_amount']
                 else:
@@ -170,9 +182,13 @@ class GenericTaxReportCustomHandler(models.AbstractModel):
                         # Expand the group of taxes since it contains at least one tax with a type != 'none'.
                         group_info = group_of_taxes_info[row['tax_id']]
                         for child_tax_id in group_info['child_tax_ids']:
+                            results[group_info['type_tax_use']]['children'][child_tax_id]['base'][
+                                column_group_key] += row['base_amount']
                             results[group_info['type_tax_use']]['children'][child_tax_id]['base_amount'][
                                 column_group_key] += row['base_amount']
                     else:
+                        results[row['tax_type_tax_use']]['children'][row['tax_id']]['base'][column_group_key] += \
+                        row['base_amount']
                         results[row['tax_type_tax_use']]['children'][row['tax_id']]['base_amount'][column_group_key] += \
                         row['base_amount']
 
@@ -240,8 +256,12 @@ class GenericTaxReportCustomHandler(models.AbstractModel):
                 else:
                     tax_type_tax_use = row['group_tax_type_tax_use'] or row['tax_type_tax_use']
 
+                results[tax_type_tax_use]['tax_deductible'][column_group_key] += row['tax_amount']
                 results[tax_type_tax_use]['tax_amount'][column_group_key] += row['tax_amount']
+                results[tax_type_tax_use]['tax_due'][column_group_key] += row['tax_amount']
+                results[tax_type_tax_use]['children'][tax_id]['tax_deductible'][column_group_key] += row['tax_amount']
                 results[tax_type_tax_use]['children'][tax_id]['tax_amount'][column_group_key] += row['tax_amount']
+                results[tax_type_tax_use]['children'][tax_id]['tax_due'][column_group_key] += row['tax_amount']
 
         return results
 

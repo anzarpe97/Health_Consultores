@@ -251,6 +251,16 @@ class AccountReport(models.AbstractModel):
         }
         self.env.context = new_context
 
+        if getattr(self, 'custom_handler_model_name', getattr(self.custom_handler_model_id, 'model', '')) == 'account.general.ledger.report.handler':
+            cols = options.get('columns', [])
+            if not any(c.get('expression_label') == 'saldo_inicial' for c in cols):
+                debit_idx = next((i for i, c in enumerate(cols) if c.get('expression_label') == 'debit'), 0)
+                debit_col = cols[debit_idx] if len(cols) > debit_idx else {}
+                column_group_key = debit_col.get('column_group_key')
+                new_col = {'name': 'Saldo inicial', 'figure_type': 'monetary', 'class': 'number', 'expression_label': 'saldo_inicial', 'column_group_key': column_group_key}
+                cols.insert(debit_idx, new_col)
+                options['columns'] = cols
+
         return options
 
     # antiguo metodo de v16, reemplazado por el nuevo de v17
@@ -559,3 +569,123 @@ class AccountReport(models.AbstractModel):
             'journal_ids': selected_journals,
         }
         self.env.cr.execute(sql, params)
+
+    def _get_lines(self, options, *args, **kwargs):
+        lines = super()._get_lines(options, *args, **kwargs)
+        
+        is_general_ledger = getattr(self, 'custom_handler_model_name', getattr(self.custom_handler_model_id, 'model', '')) == 'account.general.ledger.report.handler'
+        
+        if not is_general_ledger:
+            return lines
+
+        cols = options.get('columns', [])
+        saldo_idx = next((i for i, c in enumerate(cols) if c.get('expression_label') == 'saldo_inicial'), None)
+        
+        if saldo_idx is None:
+            return lines
+
+        # ── Collect account IDs from account-level lines ──────────
+        import re
+        def _extract_account_id(lid):
+            """Extract account.account id from a report line id string."""
+            if not lid:
+                return None
+            lid_str = str(lid)
+            # Odoo 17 line IDs look like:
+            #   ~account.report~X|~account.account~123  (account header)
+            #   ~account.report~X|~account.account~123|~account.move.line~456 (aml detail)
+            # We want to detect lines that are strictly account-level (no aml part)
+            if 'account.account' in lid_str:
+                m = re.search(r'account\.account[~|]+(\d+)', lid_str)
+                if m:
+                    return int(m.group(1))
+            return None
+
+        def _is_account_line(lid):
+            """Check if this line is an account-level header (not a move line detail)."""
+            if not lid:
+                return False
+            lid_str = str(lid)
+            # Account-level: contains account.account but NOT account.move.line
+            return 'account.account' in lid_str and 'account.move.line' not in lid_str
+
+        def _is_detail_line(lid):
+            """Check if this line is a move line detail."""
+            if not lid:
+                return False
+            return 'account.move.line' in str(lid)
+
+        # Collect all account IDs for initial balance lookup
+        account_ids = []
+        for line in lines:
+            lid = line.get('id', '')
+            if _is_account_line(lid):
+                acc_id = _extract_account_id(lid)
+                if acc_id and acc_id not in account_ids:
+                    account_ids.append(acc_id)
+
+        # Fetch initial balances
+        initial_balances = {}
+        handler = self.env['account.general.ledger.report.handler']
+        if account_ids and hasattr(handler, '_get_initial_balance_values'):
+            try:
+                initial_balances = handler._get_initial_balance_values(self, account_ids, options)
+            except Exception:
+                pass
+
+        # ── Insert the saldo_inicial column value into each line ──
+        for line in lines:
+            if 'columns' not in line:
+                continue
+            
+            lid = line.get('id', '')
+            saldo_val = 0.0
+            formatted_val = ''
+            
+            if _is_account_line(lid):
+                # Account header line: show the initial balance
+                acc_id = _extract_account_id(lid)
+                if acc_id and acc_id in initial_balances:
+                    account_tuple = initial_balances[acc_id]
+                    if len(account_tuple) > 1 and account_tuple[1]:
+                        col_group_dict = account_tuple[1]
+                        if col_group_dict:
+                            first_col_group = list(col_group_dict.keys())[0]
+                            vals = col_group_dict[first_col_group]
+                            if isinstance(vals, dict):
+                                saldo_val = vals.get('balance', 0.0)
+                                formatted_val = self.format_value(options, saldo_val, figure_type='monetary')
+                
+                col_data = {
+                    'name': formatted_val,
+                    'no_format': saldo_val,
+                    'class': 'number',
+                }
+                if len(line['columns']) > saldo_idx:
+                    line['columns'][saldo_idx] = col_data
+                else:
+                    line['columns'].insert(saldo_idx, col_data)
+            elif _is_detail_line(lid):
+                # Move line detail: empty cell
+                col_data = {
+                    'name': '',
+                    'no_format': '',
+                    'class': 'number',
+                }
+                if len(line['columns']) > saldo_idx:
+                    line['columns'][saldo_idx] = col_data
+                else:
+                    line['columns'].insert(saldo_idx, col_data)
+            else:
+                # Other structural lines: empty cell
+                col_data = {
+                    'name': '',
+                    'no_format': '',
+                    'class': 'number',
+                }
+                if len(line['columns']) > saldo_idx:
+                    line['columns'][saldo_idx] = col_data
+                else:
+                    line['columns'].insert(saldo_idx, col_data)
+
+        return lines

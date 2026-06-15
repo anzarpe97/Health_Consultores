@@ -14,6 +14,11 @@ class PurchaseOrder(models.Model):
         readonly=True
     )
 
+    state = fields.Selection(
+        selection_add=[('purchase', 'Orden de servicio')],
+        ondelete={'purchase': 'cascade'}
+    )
+
 class PurchaseOrderLine(models.Model):
     _inherit = 'purchase.order.line'
 
