@@ -1016,11 +1016,15 @@ class AccountMove(models.Model):
             if self.move_type in ('out_invoice', 'out_refund'):
                 acc_id = acc_part_id.property_account_receivable_id.id
                 wh_type = 'out_invoice'
-                journal = acc_part_id.sale_islr_journal_id
+                journal = acc_part_id.sale_islr_journal_id or self.company_id.partner_id.sale_islr_journal_id
             else:
                 acc_id = acc_part_id.property_account_payable_id.id
                 wh_type = 'in_invoice'
-                journal = acc_part_id.purchase_islr_journal_id
+                journal = acc_part_id.purchase_islr_journal_id or self.company_id.partner_id.purchase_islr_journal_id
+            
+            if not journal:
+                raise UserError("Debe configurar el Diario de Compra/Venta para ISLR en la compañía o en el proveedor.")
+            
             values = {
                 'name': wh_ret_code,  # TODO (REVISAR)_('IVA WH - ORIGIN %s' %(inv_brw.number)),
                 'partner_id': acc_part_id.id,
