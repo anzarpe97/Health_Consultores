@@ -240,7 +240,7 @@ class AccountWhIslrDocInvoices(models.Model):
                 apply_income = (apply_income and
                                 base >= rate_tuple[0] * rate_tuple[1] / 100.0)
             wh = 0.0
-            subtract = apply_income and rate_tuple[1] or 0.0
+            subtract = apply_income and rate_tuple[3] or 0.0
             subtract_write = 0.0
             sb_concept = subtract
             for line in iwdl_id.xml_ids:
@@ -545,9 +545,9 @@ class AccountWhIslrDocInvoices(models.Model):
                 valor = 0.0034
             else:
                 valor = 0
-            rate_brw_minimum = float(ut_obj.amount *(selected_rate.minimum + valor)* (selected_rate.wh_perc/100))
+            rate_brw_minimum = float(ut_obj.amount * (selected_rate.minimum + valor))
             rate_brw_minimum = round(rate_brw_minimum, 2)
-            rate_brw_subtract =   float(ut_obj.amount * selected_rate.subtract * (selected_rate.wh_perc/100))
+            rate_brw_subtract = float(ut_obj.amount * selected_rate.subtract)
             rate_brw_subtract = round(rate_brw_subtract, 2)
         else:
             rate2 = {
@@ -586,9 +586,9 @@ class AccountWhIslrDocInvoices(models.Model):
                     valor = 0.0034
                 else:
                     valor = 0
-                rate_brw_minimum =  float(ut_obj.amount * (rate_brw.minimum + valor) * (rate_brw.wh_perc/100))
+                rate_brw_minimum = float(ut_obj.amount * (rate_brw.minimum + valor))
                 rate_brw_minimum = round(rate_brw_minimum, 2)
-                rate_brw_subtract =  float(ut_obj.amount * rate_brw.subtract * (rate_brw.wh_perc/100))
+                rate_brw_subtract = float(ut_obj.amount * rate_brw.subtract)
                 rate_brw_subtract = round(rate_brw_subtract, 2)
                 found_rate = True
                 selected_rate = rate_brw
