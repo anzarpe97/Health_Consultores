@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Elemento de menú bajo Contabilidad > Reportes -->
-    <menuitem
-        id="menu_balance_situacion"
-        name="Balance de Situación"
-        parent="account.menu_finance_reports"
-        action="balance_situacion.action_balance_situacion_wizard"
-        sequence="15"
-        groups="account.group_account_user,account.group_account_manager"/>
+<menuitem
+    id="menu_balance_situacion"
+    name="Balance de Situación Externo"
+    parent="account.menu_finance_reports"
+    action="balance_situacion.action_balance_situacion_wizard"
+    sequence="15"
+    groups="account.group_account_invoice_ledger,account.group_account_user,account.group_account_manager"/>
 </odoo>
