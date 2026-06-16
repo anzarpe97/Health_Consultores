@@ -4,34 +4,7 @@ from odoo.tools import float_round
 
 
 class BalanceSituacion(models.TransientModel):
-    """
-    Modelo transitorio que calcula y agrupa las cuentas contables
-    para el reporte de Balance de Situación.
-    
-    Estructura del balance (según imagen CONVECA):
-    ─────────────────────────────────────────────
-    ACTIVOS
-      Activos corrientes
-        Cuentas bancarias y en efectivo
-        Por cobrar
-        Activos corrientes          (otros)
-        Prepagos
-      Activos adicionales fijos
-      Activos no corrientes extras
-    PASIVOS
-      Pasivos corrientes
-        Pasivos corrientes          (otros)
-        Por pagar
-      Pasivos adicionales no corrientes
-    CAPITAL
-      Ganancias sin asignar
-        Ganancias no asignadas del año actual
-          Ganancias del año actual
-          Ganancias asignadas del año actual
-        Ganancias no asignados de años anteriores
-      Ganancias acumuladas
-    PASIVOS + CAPITAL
-    """
+
     _name = 'balance.situacion'
     _description = 'Balance de Situación'
 
@@ -200,5 +173,5 @@ class BalanceSituacion(models.TransientModel):
         """Acción llamada desde el wizard para imprimir el PDF."""
         data = self._compute_sections()
         return self.env.ref(
-            'balance_situacion_conveca.action_report_balance_situacion'
+            'balance_situacion.action_report_balance_situacion'
         ).report_action(self, data=data)

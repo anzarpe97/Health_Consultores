@@ -43,5 +43,5 @@ class BalanceSituacionWizard(models.TransientModel):
         })
         data = balance._compute_sections()
         return self.env.ref(
-            'balance_situacion_conveca.action_report_balance_situacion'
+            'balance_situacion.action_report_balance_situacion'
         ).report_action(balance, data=data)
