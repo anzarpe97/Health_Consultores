@@ -23,7 +23,6 @@
     ],
     'data': [
         'security/ir.model.access.csv',
-        'data/account_financial_report_data.xml',
         'wizard/balance_situacion_wizard_views.xml',
         'report/balance_situacion_report_template.xml',
         'report/balance_situacion_report.xml',
