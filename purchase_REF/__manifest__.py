@@ -12,7 +12,7 @@
         'views/sale_order_line_view.xml',
         'views/report_saleorder_document_inherit.xml',
         # 'views/account_invoice_price_check_wizard.xml',
-        # 'views/account_move_price_approval_view.xml',
+        # 'views/account_move_price_approval_view.xml' ,
     ],
     'installable': True,
     'application': False,

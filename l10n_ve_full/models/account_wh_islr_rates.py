@@ -30,7 +30,7 @@ class AccountWhIslrRates(models.Model):
             digits=(16, 2),
             help="Cantidad a restar de la cantidad total a retener "
                  "Cantidad Porcentaje de retención ..... Este sustraendo solamente"
-                 "aplicado la primera vez que realiza una retención", compute='_subtract')
+                 "aplicado la primera vez que realiza una retención")
     residence= fields.Boolean(
             'Residencia',
             help="Indica si una persona es residente, en comparación con la "
@@ -62,18 +62,3 @@ class AccountWhIslrRates(models.Model):
                         'No Domiciliada'
             res[rate.id] = name
         return res
-
-    def _subtract(self):
-        for rec in self:
-            if rec.name == 'PJDO':
-                rec.subtract = 0
-            else:
-                if rec.minimum > 0:
-                    # busca ultima unidad tributaria
-                    ut = self.env['account.ut'].search([], limit=1, order='date desc')
-                    if ut:
-                        rec.subtract = rec.minimum * ut.amount * (rec.wh_perc / 100)
-                    else:
-                        rec.subtract = 0
-                else:
-                    rec.subtract = 0

@@ -240,7 +240,7 @@ class AccountWhIslrDocInvoices(models.Model):
                 apply_income = (apply_income and
                                 base >= rate_tuple[0] * rate_tuple[1] / 100.0)
             wh = 0.0
-            subtract = apply_income and rate_tuple[1] or 0.0
+            subtract = apply_income and rate_tuple[3] or 0.0
             subtract_write = 0.0
             sb_concept = subtract
             for line in iwdl_id.xml_ids:
@@ -539,14 +539,15 @@ class AccountWhIslrDocInvoices(models.Model):
 
         if not rate2:
             ut_obj = self.env['account.ut'].search([], order='id desc', limit=1)
+            selected_rate = islr_rate_ids[0]
             
-            if islr_rate_ids.minimum == 83.33 and islr_rate_ids.name == 'PNRE':
+            if selected_rate.minimum == 83.33 and selected_rate.name == 'PNRE':
                 valor = 0.0034
             else:
                 valor = 0
-            rate_brw_minimum = float(ut_obj.amount *(islr_rate_ids.minimum + valor)* (islr_rate_ids.wh_perc/100))
+            rate_brw_minimum = float(ut_obj.amount * (selected_rate.minimum + valor))
             rate_brw_minimum = round(rate_brw_minimum, 2)
-            rate_brw_subtract =   float(ut_obj.amount * islr_rate_ids.subtract * (islr_rate_ids.wh_perc/100))
+            rate_brw_subtract = float(ut_obj.amount * selected_rate.subtract)
             rate_brw_subtract = round(rate_brw_subtract, 2)
         else:
             rate2 = {
@@ -577,28 +578,30 @@ class AccountWhIslrDocInvoices(models.Model):
                 rate2['cumulative_tax_ut'] += iwhd_brw.raw_tax_ut
                 
             found_rate = False
+            selected_rate = False
             for rate_brw in islr_rate_ids:
                 if rate_brw.minimum > base_ut * rate_brw.base / 100.0:
                     continue
-                if islr_rate_ids.minimum == 83.33 and islr_rate_ids.name == 'PNRE':
+                if rate_brw.minimum == 83.33 and rate_brw.name == 'PNRE':
                     valor = 0.0034
                 else:
                     valor = 0
-                rate_brw_minimum =  float(ut_obj.amount * (islr_rate_ids.minimum + valor) * (islr_rate_ids.wh_perc/100))
+                rate_brw_minimum = float(ut_obj.amount * (rate_brw.minimum + valor))
                 rate_brw_minimum = round(rate_brw_minimum, 2)
-                rate_brw_subtract =  float(ut_obj.amount * islr_rate_ids.subtract * (islr_rate_ids.wh_perc/100))
+                rate_brw_subtract = float(ut_obj.amount * rate_brw.subtract)
                 rate_brw_subtract = round(rate_brw_subtract, 2)
                 found_rate = True
+                selected_rate = rate_brw
                 rate2['subtrahend'] = rate_brw.subtract
                 break
                 
             if not found_rate:
                 msg += _(' Para unidades impositivas mayores que cero')
                 raise UserError(_('Falta la configuración \n %s') % msg)
-        return (islr_rate_ids.base, rate_brw_minimum, islr_rate_ids.wh_perc,
-                rate_brw_subtract, islr_rate_ids.code, islr_rate_ids.id, islr_rate_ids.name,
-                rate2) if msg_nature == 'Natural' else (islr_rate_ids.base, 0, islr_rate_ids.wh_perc,
-                0, islr_rate_ids.code, islr_rate_ids.id, islr_rate_ids.name,
+                
+        # Return the specific rate's parameters!
+        return (selected_rate.base, rate_brw_minimum, selected_rate.wh_perc,
+                rate_brw_subtract, selected_rate.code, selected_rate.id, selected_rate.name,
                 rate2)
 
     def _get_country_fiscal(self, partner_id):

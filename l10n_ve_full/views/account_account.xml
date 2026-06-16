@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_account_list_inherit_l10n_ve_full" model="ir.ui.view">
+        <field name="name">account.account.list.inherit.l10n_ve_full</field>
+        <field name="model">account.account</field>
+        <field name="inherit_id" ref="account.view_account_list"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='account_type']" position="after">
+                <field name="custom_inventory_type" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_account_form_inherit_l10n_ve_full" model="ir.ui.view">
+        <field name="name">account.account.form.inherit.l10n_ve_full</field>
+        <field name="model">account.account</field>
+        <field name="inherit_id" ref="account.view_account_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='account_type']" position="after">
+                <field name="custom_inventory_type"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

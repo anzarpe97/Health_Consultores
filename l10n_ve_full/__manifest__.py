@@ -62,6 +62,7 @@
         'security/ir.model.access.csv',
         'views/res_config_settings.xml',
         'views/template_mail.xml',
+        'views/account_account.xml',
     ],
     "license": "GPL-2",
     "price": 3500,

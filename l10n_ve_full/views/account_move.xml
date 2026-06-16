@@ -149,7 +149,7 @@
                     </group>
                 </xpath>
                 <xpath expr="//field[@name='quantity']" position="before">
-                    <field name="concept_id" required="1" force_save="1" readonly="1" optional="hide" />
+                    <field name="concept_id" required="1" force_save="1" optional="hide" />
                 </xpath>
 
                 <xpath expr="//div[@name='journal_div']" position="after">
