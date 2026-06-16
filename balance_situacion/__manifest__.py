@@ -3,10 +3,9 @@
     'name': 'Balance de Situación',
     'version': '17.0.1.0.0',
     'category': 'Accounting/Reports',
-    'summary': 'Reporte de Balance de Situación personalizado para Constructores Venezolanos C.A.',
+    'summary': 'Reporte de Balance de Situación personalizado',
     'description': """
-        Módulo que genera el reporte de Balance de Situación con el formato estándar
-        utilizado por CONSTRUCTORES VENEZOLANOS, C.A. (CONVECA).
+        Módulo que genera el reporte de Balance de Situación con el formato estándar.
         
         Incluye:
         - Activos Corrientes (Cuentas bancarias, Por cobrar, Prepagos)
@@ -32,7 +31,7 @@
     ],
     'assets': {
         'web.report_assets_common': [
-            'balance_situacion_conveca/static/description/balance_report.css',
+            'balance_situacion/static/description/balance_report.css',
         ],
     },
     'installable': True,
