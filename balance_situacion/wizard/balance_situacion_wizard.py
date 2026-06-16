@@ -34,14 +34,19 @@ class BalanceSituacionWizard(models.TransientModel):
         """Crea el registro transitorio de cálculo y lanza el PDF."""
         self.ensure_one()
         balance = self.env['balance.situacion'].create({
-            'date_to':      self.date_to,
-            'date_from':    self.date_from,
-            'company_id':   self.company_id.id,
-            'journal_ids':  [(6, 0, self.journal_ids.ids)],
-            'only_posted':  self.only_posted,
+            'date_to':       self.date_to,
+            'date_from':     self.date_from,
+            'company_id':    self.company_id.id,
+            'journal_ids':   [(6, 0, self.journal_ids.ids)],
+            'only_posted':   self.only_posted,
             'accrual_basis': self.accrual_basis,
         })
-        data = balance._compute_sections()
-        return self.env.ref(
-            'balance_situacion.action_report_balance_situacion'
-        ).report_action(balance, data=data)
+        
+        # Obtenemos los cálculos
+        sections_data = balance._compute_sections()
+        
+        # Retornamos la acción del reporte combinando la data calculada
+        return self.env.ref('balance_situacion.action_report_balance_situacion').report_action(
+            balance, 
+            data={'computed': sections_data} # Ahora en tu QWeb podrás acceder vía: data['computed']['total_activos']
+        )
