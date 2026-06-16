@@ -8,7 +8,7 @@
         Módulo que genera el reporte de Balance de Situación con el formato estándar.
         
         Incluye:
-        - Activos Corrientes (Cuentas bancarias, Por cobrar, Prepagos)
+        - Activos Corrientes (Cuentas bancarias, Por cobrar)
         - Activos Adicionales Fijos
         - Activos No Corrientes Extras
         - Pasivos Corrientes (Por pagar)
