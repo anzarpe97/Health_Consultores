@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_balance_situacion_user,balance.situacion user,model_balance_situacion,account.group_account_user,1,1,1,1
+access_balance_situacion_manager,balance.situacion manager,model_balance_situacion,account.group_account_manager,1,1,1,1
+access_balance_situacion_wizard_user,balance.situacion.wizard user,model_balance_situacion_wizard,account.group_account_user,1,1,1,1
+access_balance_situacion_wizard_manager,balance.situacion.wizard manager,model_balance_situacion_wizard,account.group_account_manager,1,1,1,1

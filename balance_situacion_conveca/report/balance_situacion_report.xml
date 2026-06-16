@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Acción de reporte PDF -->
+    <record id="action_report_balance_situacion" model="ir.actions.report">
+        <field name="name">Balance de Situación</field>
+        <field name="model">balance.situacion</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">balance_situacion_conveca.report_balance_situacion_template</field>
+        <field name="report_file">balance_situacion_conveca.report_balance_situacion_template</field>
+        <field name="print_report_name">'Balance de Situación - %s' % (object.company_id.name)</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="paperformat_id" ref="base.paperformat_euro"/>
+    </record>
+</odoo>

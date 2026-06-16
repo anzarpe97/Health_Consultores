@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<template id="report_balance_situacion_template">
+<t t-call="web.html_container">
+<t t-call="web.external_layout">
+<div class="page balance-report">
+
+    <!-- ══════════════════ CABECERA ══════════════════ -->
+    <div class="balance-header">
+        <h2 class="report-title">Balance de situación</h2>
+        <table class="header-table" width="100%">
+            <tr>
+                <td style="width:55%">
+                    <strong t-esc="docs.company_id.name"/>
+                    <br/>
+                    <span t-esc="docs.company_id.street"/>
+                    <br/>
+                    <span t-esc="docs.company_id.city"/>
+                    <t t-if="docs.company_id.state_id">
+                        <span t-esc="' ' + docs.company_id.state_id.name"/>
+                    </t>
+                    <br/>
+                    <span t-esc="docs.company_id.country_id.name"/>
+                    <br/>
+                    NIF: <span t-esc="docs.company_id.vat"/>
+                </td>
+                <td style="width:45%; vertical-align:top; font-size:9pt;">
+                    Al <span t-esc="docs.date_to" t-options='{"widget":"date"}'/>
+                    <br/>Diarios: Todos
+                    <br/>Cuentas analíticas: Todos
+                    <br/>Planes analíticos: Todos
+                    <br/>Opciones: <t t-if="docs.only_posted">Solo asientos publicados</t>
+                    <t t-if="docs.accrual_basis">, Accrual Basis</t>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- ══════════════════ CUERPO DEL BALANCE ══════════════════ -->
+    <table class="balance-table" width="100%">
+        <!-- Encabezado de columnas -->
+        <thead>
+            <tr>
+                <th class="col-concept"> </th>
+                <th class="col-amount">
+                    Al <span t-esc="docs.date_to" t-options='{"widget":"date"}'/>
+                    <br/>Saldo
+                </th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <!-- ───────────────── ACTIVOS ───────────────── -->
+            <tr class="row-section">
+                <td><strong>ACTIVOS</strong></td>
+                <td class="amount">
+                    <strong>
+                        <span t-esc="'%.2f' % docs._compute_sections()['total_activos']"/>
+                        Bs.
+                    </strong>
+                </td>
+            </tr>
+            <tr class="row-group">
+                <td class="indent-1">Activos corrientes</td>
+                <td class="amount">
+                    <span t-esc="'%.2f' % docs._compute_sections()['total_activos_corrientes']"/>
+                    Bs.
+                </td>
+            </tr>
+            <tr>
+                <td class="indent-2">Cuentas bancarias y en efectivo</td>
+                <td class="amount">
+                    <span t-esc="'%.2f' % docs._compute_sections()['cuentas_bancarias']"/>
+                    Bs.
+                </td>
+            </tr>
+            <tr>
+                <td class="indent-2">Por cobrar</td>
+                <td class="amount">
+                    <span t-esc="'%.2f' % docs._compute_sections()['por_cobrar']"/>
+                    Bs.
+                </td>
+            </tr>
+            <tr>
+                <td class="indent-2">Activos corrientes</td>
+                <td class="amount">
+                    <span t-esc="'%.2f' % docs._compute_sections()['activos_ctes_otros']"/>
+                    Bs.
+                </td>
+            </tr>
+            <tr>
+                <td class="indent-2">Prepagos</td>
+                <td class="amount"> </td>
+            </tr>
+            <tr>
+                <td class="indent-1">Activos adicionales fijos</td>
+                <td class="amount"> </td>
+            </tr>
+            <tr>
+                <td class="indent-1">Activos no corrientes extras</td>
+                <td class="amount"> </td>
+            </tr>
+
+            <!-- ───────────────── PASIVOS ───────────────── -->
+            <tr class="row-section">
+                <td><strong>PASIVOS</strong></td>
+                <td class="amount">
+                    <strong>
+                        <span t-esc="'%.2f' % docs._compute_sections()['total_pasivos']"/>
+                        Bs.
+                    </strong>
+                </td>
+            </tr>
+            <tr class="row-group">
+                <td class="indent-1">Pasivos corrientes</td>
+                <td class="amount">
+                    <span t-esc="'%.2f' % docs._compute_sections()['total_pasivos_corrientes']"/>
+                    Bs.
+                </td>
+            </tr>
+            <tr>
+                <td class="indent-2">Pasivos corrientes</td>
+                <td class="amount">
+                    <span t-esc="'%.2f' % docs._compute_sections()['pasivos_ctes_otros']"/>
+                    Bs.
+                </td>
+            </tr>
+            <tr>
+                <td class="indent-2">Por pagar</td>
+                <td class="amount">
+                    <span t-esc="'%.2f' % docs._compute_sections()['por_pagar']"/>
+                    Bs.
+                </td>
+            </tr>
+            <tr>
+                <td class="indent-1">Pasivos adicionales no corrientes</td>
+                <td class="amount"> </td>
+            </tr>
+
+            <!-- ───────────────── CAPITAL ───────────────── -->
+            <tr class="row-section">
+                <td><strong>CAPITAL</strong></td>
+                <td class="amount">
+                    <strong>
+                        <span t-esc="'%.2f' % docs._compute_sections()['total_capital']"/>
+                        Bs.
+                    </strong>
+                </td>
+            </tr>
+            <tr class="row-group">
+                <td class="indent-1">Ganancias sin asignar</td>
+                <td class="amount">
+                    <span t-esc="'%.2f' % docs._compute_sections()['ganancias_sin_asignar']"/>
+                    Bs.
+                </td>
+            </tr>
+            <tr>
+                <td class="indent-2">Ganancias no asignadas del año actual</td>
+                <td class="amount">
+                    <span t-esc="'%.2f' % docs._compute_sections()['gan_no_asig_actual']"/>
+                    Bs.
+                </td>
+            </tr>
+            <tr>
+                <td class="indent-3">Ganancias del año actual</td>
+                <td class="amount">
+                    <span t-esc="'%.2f' % docs._compute_sections()['gan_anio_actual']"/>
+                    Bs.
+                </td>
+            </tr>
+            <tr>
+                <td class="indent-3">Ganancias asignadas del año actual</td>
+                <td class="amount"> </td>
+            </tr>
+            <tr>
+                <td class="indent-2">Ganancias no asignados de años anteriores</td>
+                <td class="amount">
+                    <span t-esc="'%.2f' % docs._compute_sections()['gan_anios_ant']"/>
+                    Bs.
+                </td>
+            </tr>
+            <tr>
+                <td class="indent-1">Ganancias acumuladas</td>
+                <td class="amount"> </td>
+            </tr>
+
+            <!-- ───────────────── TOTAL FINAL ───────────────── -->
+            <tr class="row-total">
+                <td><strong>PASIVOS + CAPITAL</strong></td>
+                <td class="amount">
+                    <strong>
+                        <span t-esc="'%.2f' % docs._compute_sections()['total_pasivos_capital']"/>
+                        Bs.
+                    </strong>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>
+</t>
+</t>
+</template>
+</odoo>
