@@ -29,3 +29,4 @@ from . import account_wh_iva_libro_resumen
 from . import res_country_state
 from . import res_country_state_municipality
 from . import res_country_state_municipality_parish
+from . import account_account
