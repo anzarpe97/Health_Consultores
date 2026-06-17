@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="custom_financial_report_address" inherit_id="account_reports.filter_info_template">
+        <xpath expr="//div[hasclass('print_only')]" position="inside">
+            <div class="company_address_nif" style="margin-bottom: 15px; margin-top: 5px;">
+                <div style="font-weight: bold; background-color: #f2f2f2; padding: 5px 10px; border: 1px solid #ccc; border-radius: 3px; display: inline-block; font-size: 13px;">
+                    <div>Dirección: AV SANTA LUCIA, AV PRINCIPAL DEL BOSQUE Y AV SANTA ISABEL EDIF CENTRO DORAL PISO 12 OF 0123 URB EL BOSQUE</div>
+                    <div>NIF: J-40302187-2</div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>

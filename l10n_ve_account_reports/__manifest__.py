@@ -12,7 +12,7 @@
     'version': '17.0.1.0',
     'depends': ['account_reports'],
     'data': [
-        'views/report_css_inherit.xml',
+        'views/account_reports_pdf_inherit.xml',
     ],
     'installable': True,
     'auto_install': False,
