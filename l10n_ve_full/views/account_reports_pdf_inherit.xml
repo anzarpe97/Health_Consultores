@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Plantilla para agregar la dirección y NIF al PDF de Reportes Financieros -->
+    <template id="custom_account_reports_header_ve" inherit_id="account_reports.main_template">
+        <xpath expr="//div[hasclass('o_account_reports_header')]" position="inside">
+            <div class="row" style="font-size: 13px; margin-top: 10px; margin-bottom: 20px;">
+                <div class="col-6">
+                    <!-- Imprimir dirección de la empresa -->
+                    <div t-if="env.company.street"><t t-esc="env.company.street"/></div>
+                    <div t-if="env.company.street2"><t t-esc="env.company.street2"/></div>
+                    <div>
+                        <t t-if="env.company.city"><t t-esc="env.company.city"/> </t>
+                        <t t-if="env.company.state_id"><t t-esc="env.company.state_id.name"/> </t>
+                        <t t-if="env.company.zip"><t t-esc="env.company.zip"/></t>
+                    </div>
+                    <div t-if="env.company.country_id"><t t-esc="env.company.country_id.name"/></div>
+                    
+                    <!-- Imprimir NIF (RIF) con el recuadro gris -->
+                    <div style="font-weight: bold; background-color: #f2f2f2; display: inline-block; padding: 4px 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 2px;">
+                        NIF: <span t-esc="env.company.vat"/>
+                    </div>
+                </div>
+            </div>
+        </xpath>
+    </template>
+</odoo>
