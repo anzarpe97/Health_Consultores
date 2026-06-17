@@ -1,0 +1,20 @@
+/* Este SCSS solo se cargará al imprimir reportes en PDF */
+.o_account_reports_page {
+    .o_account_reports_header {
+        /* Buscamos el nombre de la empresa (primer h2) y le inyectamos la dirección y RIF debajo */
+        h2:first-of-type::after {
+            content: "Dirección: AV SANTA LUCIA, AV PRINCIPAL DEL BOSQUE Y AV SANTA ISABEL EDIF CENTRO DORAL PISO 12 OF 0123 URB EL BOSQUE\A NIF: J-40302187-2";
+            white-space: pre-wrap; /* Permite saltos de línea con \A */
+            display: block;
+            font-size: 13px;
+            font-weight: bold;
+            background-color: #f2f2f2;
+            padding: 5px 10px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            line-height: 1.5;
+            color: #333;
+        }
+    }
+}
