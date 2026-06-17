@@ -1,11 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <template id="custom_financial_report_address_main" inherit_id="account_reports.pdf_export_main">
-        <xpath expr="//div[hasclass('col-8')]" position="inside">
-            <div style="font-weight: bold; background-color: #f2f2f2; padding: 5px 10px; border: 1px solid #ccc; border-radius: 3px; display: inline-block; font-size: 13px; margin-top: 10px; color: #333; width: 100%;">
-                <div>Dirección: AV SANTA LUCIA, AV PRINCIPAL DEL BOSQUE Y AV SANTA ISABEL EDIF CENTRO DORAL PISO 12 OF 0123 URB EL BOSQUE</div>
-                <div>NIF: J-40302187-2</div>
-            </div>
+        <xpath expr="//header" position="replace">
+            <header>
+                <div class="row" style="background-color: #f0f0f0 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; padding: 20px; margin-bottom: 20px; border-radius: 4px; width: 100%; border: 1px solid #dddddd;">
+                    <div class="col-8">
+                        <h3 style="font-weight: bold; margin-bottom: 15px; font-size: 22px; color: #000;">
+                            <t t-if="report.filter_show_draft and options.get('all_entries')">[Borrador] </t>
+                            <t t-out="report_title"/>
+                        </h3>
+                        <div style="font-size: 13px; color: #000; line-height: 1.4;">
+                            <div t-out="env.company.name" style="font-weight: bold;"/>
+                            <t t-if="env.company.street"><div t-out="env.company.street"/></t>
+                            <t t-if="env.company.street2"><div t-out="env.company.street2"/></t>
+                            <div>
+                                <t t-if="env.company.city"><span t-out="env.company.city"/> </t>
+                                <t t-if="env.company.state_id"><span t-out="env.company.state_id.name"/> </t>
+                                <t t-if="env.company.zip"><span t-out="env.company.zip"/></t>
+                            </div>
+                            <t t-if="env.company.country_id"><div t-out="env.company.country_id.name"/></t>
+                            <div t-if="env.company.vat" style="margin-top: 4px;">
+                                NIF: <t t-out="env.company.vat"/>
+                            </div>
+                            <div t-elif="env.company.company_registry" style="margin-top: 4px;">
+                                NIF: <t t-out="env.company.company_registry"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-4" style="font-size: 12px; color: #000; padding-top: 45px;">
+                        <t t-call="{{custom_templates.get('pdf_export_filters', 'account_reports.pdf_export_filters')}}"/>
+                    </div>
+                </div>
+            </header>
         </xpath>
     </template>
 </odoo>
