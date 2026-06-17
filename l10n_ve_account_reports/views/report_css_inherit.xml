@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Inyectar CSS globalmente pero restringido a reportes contables -->
+    <template id="custom_account_reports_css" inherit_id="web.html_container">
+        <xpath expr="//head" position="inside">
+            <style>
+                .o_account_reports_page h2:first-of-type::after,
+                .o_account_reports_body h2:first-of-type::after,
+                .o_account_reports_header h2:first-of-type::after,
+                .o_account_reports_page h4:first-of-type::after,
+                .o_account_reports_header h4:first-of-type::after {
+                    content: "Dirección: AV SANTA LUCIA, AV PRINCIPAL DEL BOSQUE Y AV SANTA ISABEL EDIF CENTRO DORAL PISO 12 OF 0123 URB EL BOSQUE\A NIF: J-40302187-2";
+                    white-space: pre-wrap;
+                    display: block;
+                    font-size: 13px !important;
+                    font-weight: bold;
+                    background-color: #f2f2f2;
+                    padding: 5px 10px;
+                    margin-top: 10px;
+                    margin-bottom: 15px;
+                    border: 1px solid #ccc;
+                    border-radius: 3px;
+                    color: #333;
+                    line-height: 1.5;
+                }
+            </style>
+        </xpath>
+    </template>
+</odoo>

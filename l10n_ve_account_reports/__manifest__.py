@@ -11,11 +11,9 @@
     'category': 'Accounting/Localizations',
     'version': '17.0.1.0',
     'depends': ['account_reports'],
-    'assets': {
-        'web.report_assets_pdf': [
-            'l10n_ve_account_reports/static/src/scss/account_report_print.scss',
-        ],
-    },
+    'data': [
+        'views/report_css_inherit.xml',
+    ],
     'installable': True,
     'auto_install': False,
 }
