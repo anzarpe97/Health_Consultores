@@ -3,6 +3,9 @@
     <template id="custom_financial_report_address_main" inherit_id="account_reports.pdf_export_main">
         <!-- Reemplazamos el título principal para inyectar nuestro cuadro con la información de la empresa -->
         <xpath expr="//h2 | //*[contains(@t-out, 'report_title')]/.." position="replace">
+            <style>
+                .o_account_reports_header > h2 { display: none !important; }
+            </style>
             <div style="background-color: #f0f0f0 !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; padding: 15px; margin-bottom: 20px; border-radius: 4px; border: 1px solid #dddddd; page-break-inside: avoid;">
                 <h3 style="font-weight: bold; margin-bottom: 10px; font-size: 20px; color: #000; margin-top: 0;">
                     <t t-if="report.filter_show_draft and options.get('all_entries')">[Borrador] </t>
@@ -27,13 +30,6 @@
                     </div>
                 </div>
             </div>
-        </xpath>
-        
-        <!-- Ocultamos el nombre de la compañía que viene por defecto en el layout para no duplicarlo, pero dejamos la fecha -->
-        <xpath expr="//div[hasclass('page')]" position="before">
-            <style>
-                .o_account_reports_header > h2 { display: none !important; }
-            </style>
         </xpath>
     </template>
 </odoo>
