@@ -63,7 +63,6 @@
         'views/res_config_settings.xml',
         'views/template_mail.xml',
         'views/account_account.xml',
-        'views/account_reports_pdf_inherit.xml',
     ],
     "license": "GPL-2",
     "price": 3500,
