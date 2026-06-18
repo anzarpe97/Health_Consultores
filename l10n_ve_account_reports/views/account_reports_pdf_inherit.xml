@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="custom_financial_report_address_ve" inherit_id="account_reports.pdf_export_main">
-        <xpath expr="//div[hasclass('col-8')]" position="inside">
-            <div class="company_address_nif" style="margin-top: 15px; margin-bottom: 25px; font-size: 13px;">
+    <template id="custom_financial_report_address_ve" inherit_id="account_reports.company_information">
+        <xpath expr="//div[hasclass('row')]" position="after">
+            <div class="company_address_nif" style="margin-top: 5px; margin-bottom: 10px; font-size: 13px;">
                 <div style="font-weight: bold; background-color: #f2f2f2; padding: 5px 10px; border: 1px solid #ccc; border-radius: 3px; display: inline-block;">
                     <div>Dirección: AV SANTA LUCIA, AV PRINCIPAL DEL BOSQUE Y AV SANTA ISABEL EDIF CENTRO DORAL PISO 12 OF 0123 URB EL BOSQUE</div>
                     <div>NIF: J-40302187-2</div>
