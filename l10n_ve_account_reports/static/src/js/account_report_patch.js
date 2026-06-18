@@ -22,5 +22,7 @@ const observer = new MutationObserver((mutations) => {
     }
 });
 
-// Start observing the document body for appended elements
-observer.observe(document.body, { childList: true, subtree: true });
+// Start observing the document body for appended elements, wait for DOMContentLoaded to ensure body exists
+document.addEventListener('DOMContentLoaded', () => {
+    observer.observe(document.body, { childList: true, subtree: true });
+});
