@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Inyectamos nuestro encabezado en la plantilla base interna de Odoo (web.internal_layout) -->
-    <!-- Esta plantilla es la que envuelve los reportes financieros al exportarlos a PDF en Odoo 17 -->
-    <template id="custom_financial_report_address_ve" inherit_id="web.internal_layout">
-        <!-- Buscamos el header y colocamos nuestro bloque al final del mismo -->
-        <xpath expr="//div[hasclass('header')]" position="inside">
+    <template id="custom_financial_report_address_ve" inherit_id="account_reports.pdf_export_main">
+        <xpath expr="//div[hasclass('o_header_font')]/div[hasclass('col-8')]" position="inside">
             <div class="company_address_nif" style="margin-top: 15px; margin-bottom: 25px; font-size: 13px;">
                 <div style="font-weight: bold; background-color: #f2f2f2; padding: 5px 10px; border: 1px solid #ccc; border-radius: 3px; display: inline-block;">
                     <div>Dirección: AV SANTA LUCIA, AV PRINCIPAL DEL BOSQUE Y AV SANTA ISABEL EDIF CENTRO DORAL PISO 12 OF 0123 URB EL BOSQUE</div>
