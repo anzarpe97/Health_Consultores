@@ -11,7 +11,9 @@
     'category': 'Accounting/Localizations',
     'version': '17.0.1.0',
     'depends': ['account_reports'],
-    'data': [],
+    'data': [
+        'views/account_reports_pdf_inherit.xml',
+    ],
     'installable': True,
     'auto_install': False,
 }
