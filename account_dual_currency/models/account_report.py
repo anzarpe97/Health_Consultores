@@ -118,6 +118,8 @@ class AccountReport(models.AbstractModel):
                         <tr>
                             <td class="header-left">
                                 <div class="company-name">{self.env.company.name}</div>
+                                <div style="font-size: 0.9em; margin-top: 3px;"><strong>RIF:</strong> {self.env.company.vat or ''}</div>
+                                <div style="font-size: 0.9em; margin-bottom: 5px;"><strong>Dirección:</strong> {self.env.company.street or ''}</div>
                                 <div style="font-size: 1.5em; font-weight: bold; color: #666; margin: 5px 0 10px 0;">{self.name}</div>
                                 <div>Generado el: {fields.Date.today()}</div>
                             </td>
