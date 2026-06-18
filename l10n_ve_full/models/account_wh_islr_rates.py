@@ -49,9 +49,7 @@ class AccountWhIslrRates(models.Model):
             ut = self.env['account.ut'].search([], limit=1, order='date desc')
             ut_amount = ut.amount if ut else 0.0
             
-            if 'PJ' in rec.name or 'PNNR' in rec.name:
-                rec.subtract = 0.0
-            elif 'PINU' in rec.name:
+            if 'Tramo' in rec.name:
                 if rec.wh_perc == 15.0:
                     rec.subtract = 0.0
                 elif rec.wh_perc == 22.0:
@@ -60,6 +58,8 @@ class AccountWhIslrRates(models.Model):
                     rec.subtract = 500.0 * ut_amount
                 else:
                     rec.subtract = 0.0
+            elif rec.name in ['PJDO', 'PJND', 'PNNR']:
+                rec.subtract = 0.0
             else:
                 if rec.minimum > 0:
                     rec.subtract = rec.minimum * ut_amount * (rec.wh_perc / 100.0)
