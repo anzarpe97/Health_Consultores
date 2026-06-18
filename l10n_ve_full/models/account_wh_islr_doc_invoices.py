@@ -547,7 +547,7 @@ class AccountWhIslrDocInvoices(models.Model):
                 valor = 0
             rate_brw_minimum = float(ut_obj.amount * (selected_rate.minimum + valor))
             rate_brw_minimum = round(rate_brw_minimum, 2)
-            rate_brw_subtract = float(ut_obj.amount * selected_rate.subtract)
+            rate_brw_subtract = float(selected_rate.subtract)
             rate_brw_subtract = round(rate_brw_subtract, 2)
         else:
             rate2 = {
@@ -588,7 +588,7 @@ class AccountWhIslrDocInvoices(models.Model):
                     valor = 0
                 rate_brw_minimum = float(ut_obj.amount * (rate_brw.minimum + valor))
                 rate_brw_minimum = round(rate_brw_minimum, 2)
-                rate_brw_subtract = float(ut_obj.amount * rate_brw.subtract)
+                rate_brw_subtract = float(rate_brw.subtract)
                 rate_brw_subtract = round(rate_brw_subtract, 2)
                 found_rate = True
                 selected_rate = rate_brw
