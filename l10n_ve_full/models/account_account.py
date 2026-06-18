@@ -3,6 +3,14 @@ from odoo import fields, models
 class AccountAccount(models.Model):
     _inherit = 'account.account'
 
+    def _auto_init(self):
+        # Fix for UndefinedColumn during server restart before module upgrade
+        self.env.cr.execute("""
+            ALTER TABLE account_account 
+            ADD COLUMN IF NOT EXISTS custom_inventory_type VARCHAR;
+        """)
+        return super(AccountAccount, self)._auto_init()
+
     custom_inventory_type = fields.Selection(
         selection=[
             ('asset_receivable', 'Receivable'),
