@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Inyectamos nuestro encabezado en la plantilla de impresión PDF de reportes financieros -->
-    <template id="custom_financial_report_address_ve" inherit_id="account_reports.print_template">
-        <!-- Buscamos el h2 que contiene el título del reporte (ej. "Estado de Resultados") 
-             y colocamos nuestro bloque justo antes. Así quedará entre el logo/nombre de la empresa y el título. -->
-        <xpath expr="//h2" position="before">
-            <div class="company_address_nif" style="margin-bottom: 25px; margin-top: 10px;">
-                <div style="font-weight: bold; background-color: #f2f2f2; padding: 5px 10px; border: 1px solid #ccc; border-radius: 3px; display: inline-block; font-size: 13px;">
+    <!-- Inyectamos nuestro encabezado en la plantilla base interna de Odoo (web.internal_layout) -->
+    <!-- Esta plantilla es la que envuelve los reportes financieros al exportarlos a PDF en Odoo 17 -->
+    <template id="custom_financial_report_address_ve" inherit_id="web.internal_layout">
+        <!-- Buscamos el header y colocamos nuestro bloque al final del mismo -->
+        <xpath expr="//div[hasclass('header')]" position="inside">
+            <div class="company_address_nif" style="margin-top: 15px; margin-bottom: 25px; font-size: 13px;">
+                <div style="font-weight: bold; background-color: #f2f2f2; padding: 5px 10px; border: 1px solid #ccc; border-radius: 3px; display: inline-block;">
                     <div>Dirección: AV SANTA LUCIA, AV PRINCIPAL DEL BOSQUE Y AV SANTA ISABEL EDIF CENTRO DORAL PISO 12 OF 0123 URB EL BOSQUE</div>
                     <div>NIF: J-40302187-2</div>
                 </div>
