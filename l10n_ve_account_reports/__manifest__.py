@@ -14,6 +14,11 @@
     'data': [
         'views/account_reports_pdf_inherit.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'l10n_ve_account_reports/static/src/js/account_report_patch.js',
+        ],
+    },
     'installable': True,
     'auto_install': False,
 }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <template id="custom_financial_report_address_ve_table_header" inherit_id="account_reports.pdf_export_main_table_header">
-        <xpath expr="//thead[@id='table_header']/tr[1]" position="before">
+        <xpath expr="//thead[@id='table_header']/*[1]" position="before">
             <tr>
-                <th colspan="10" style="text-align: left; padding-top: 5px; padding-bottom: 10px;">
+                <th colspan="10" style="text-align: left; padding-top: 5px; padding-bottom: 10px; border: none !important;">
                     <div style="font-weight: bold; background-color: #f2f2f2; padding: 5px 10px; border: 1px solid #ccc; border-radius: 3px; display: inline-block; font-size: 11px;">
                         <div>Dirección: AV SANTA LUCIA, AV PRINCIPAL DEL BOSQUE Y AV SANTA ISABEL EDIF CENTRO DORAL PISO 12 OF 0123 URB EL BOSQUE</div>
                         <div>NIF: J-40302187-2</div>
