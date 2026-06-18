@@ -4,15 +4,12 @@ from odoo import models, api, _
 class AccountReport(models.Model):
     _inherit = 'account.report'
 
-    def export_to_pdf(self, options):
-        """Interceptamos la acción estándar de exportar a PDF para agregar nuestra bandera"""
-        action = super().export_to_pdf(options)
-        
-        # Le inyectamos una variable en 'options' para saber que es el personalizado.
-        if isinstance(action, dict) and 'data' in action and 'options' in action['data']:
-            action['data']['options']['custom_pdf_header'] = True
-            
-        return action
+    def get_pdf(self, options, action_id=None):
+        """Interceptamos get_pdf para activar la inyección de HTML solo al exportar a PDF"""
+        # Clonamos options para no afectar el estado global, aunque en este punto ya estamos en la descarga
+        options_copy = dict(options)
+        options_copy['custom_pdf_header'] = True
+        return super().get_pdf(options_copy, action_id=action_id)
 
     def get_html(self, options):
         """Sobrescribimos get_html para inyectar nuestro membrete en el HTML antes de generar el PDF"""
