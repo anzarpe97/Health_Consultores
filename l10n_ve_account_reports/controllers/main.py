@@ -6,12 +6,10 @@ class DebugController(http.Controller):
     @http.route('/debug/account_reports_info_combined', type='http', auth='public')
     def get_info_combined(self, **kwargs):
         from lxml import etree
-        # Obtener la vista combinada (con todas las herencias aplicadas)
-        view = request.env.ref('account_reports.pdf_export_main')
-        arch_etree = view.sudo()._get_combined_arch()
-        arch_str = etree.tostring(arch_etree, encoding='unicode')
+        # Obtener la vista original (sin herencias) para ver el contenido
+        view = request.env.ref('account_reports.company_information')
         
         return request.make_response(
-            arch_str,
+            view.arch,
             headers=[('Content-Type', 'text/xml')]
         )
