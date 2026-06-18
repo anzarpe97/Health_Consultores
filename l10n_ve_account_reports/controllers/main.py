@@ -5,18 +5,17 @@ import json
 class DebugController(http.Controller):
     @http.route('/debug/account_reports_info_combined', type='http', auth='public')
     def get_info_combined(self, **kwargs):
-        views = request.env['ir.ui.view'].sudo().search_read(
-            [('key', 'ilike', 'company_information')],
-            ['key', 'name', 'type', 'arch']
-        )
-        if not views:
-            views = request.env['ir.ui.view'].sudo().search_read(
-                [('arch', 'ilike', 'company_information')],
-                ['key', 'name', 'type', 'arch']
-            )
+        import odoo
+        import os
+        module_path = odoo.modules.get_module_path('account_reports')
+        target_file = os.path.join(module_path, 'models', 'account_report.py')
+        try:
+            with open(target_file, 'r', encoding='utf-8') as f:
+                content = f.read()
+        except Exception as e:
+            content = str(e)
             
-        import json
         return request.make_response(
-            json.dumps(views, indent=4),
-            headers=[('Content-Type', 'application/json')]
+            content,
+            headers=[('Content-Type', 'text/plain')]
         )
