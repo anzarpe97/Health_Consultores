@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <template id="custom_financial_report_address_ve" inherit_id="account_reports.company_information">
-        <xpath expr="//div[hasclass('row')]" position="after">
-            <div class="company_address_nif" style="margin-top: 5px; margin-bottom: 10px; font-size: 13px;">
-                <div style="font-weight: bold; background-color: #f2f2f2; padding: 5px 10px; border: 1px solid #ccc; border-radius: 3px; display: inline-block;">
-                    <div>Dirección: AV SANTA LUCIA, AV PRINCIPAL DEL BOSQUE Y AV SANTA ISABEL EDIF CENTRO DORAL PISO 12 OF 0123 URB EL BOSQUE</div>
-                    <div>NIF: J-40302187-2</div>
-                </div>
-            </div>
+    <template id="custom_financial_report_address_ve_table_header" inherit_id="account_reports.pdf_export_main_table_header">
+        <xpath expr="//thead[@id='table_header']/tr[1]" position="before">
+            <tr>
+                <th colspan="10" style="text-align: left; padding-top: 5px; padding-bottom: 10px;">
+                    <div style="font-weight: bold; background-color: #f2f2f2; padding: 5px 10px; border: 1px solid #ccc; border-radius: 3px; display: inline-block; font-size: 11px;">
+                        <div>Dirección: AV SANTA LUCIA, AV PRINCIPAL DEL BOSQUE Y AV SANTA ISABEL EDIF CENTRO DORAL PISO 12 OF 0123 URB EL BOSQUE</div>
+                        <div>NIF: J-40302187-2</div>
+                    </div>
+                </th>
+            </tr>
         </xpath>
     </template>
 </odoo>
