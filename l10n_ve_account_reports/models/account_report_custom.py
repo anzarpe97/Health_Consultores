@@ -4,25 +4,9 @@ from odoo import models, api, _
 class AccountReport(models.Model):
     _inherit = 'account.report'
 
-    def get_report_information(self, options):
-        """Inyectar el nuevo botón PDF Personalizado en las opciones del reporte"""
-        res = super().get_report_information(options)
-        if 'options' in res and 'buttons' in res['options']:
-            # Agregamos el botón
-            res['options']['buttons'].append({
-                'name': 'PDF Personalizado',
-                'sequence': 15,
-                'action': 'export_custom_pdf',
-                'file_export_type': _('PDF')
-            })
-            # Ordenamos por secuencia
-            res['options']['buttons'] = sorted(res['options']['buttons'], key=lambda x: x.get('sequence', 100))
-        return res
-
-    def export_custom_pdf(self, options):
-        """Acción que se ejecuta al presionar el botón PDF Personalizado"""
-        # Obtenemos la acción estándar de exportar a PDF
-        action = self.export_to_pdf(options)
+    def export_to_pdf(self, options):
+        """Interceptamos la acción estándar de exportar a PDF para agregar nuestra bandera"""
+        action = super().export_to_pdf(options)
         
         # Le inyectamos una variable en 'options' para saber que es el personalizado.
         if isinstance(action, dict) and 'data' in action and 'options' in action['data']:
