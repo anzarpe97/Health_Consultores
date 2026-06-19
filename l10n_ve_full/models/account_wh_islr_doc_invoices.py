@@ -255,7 +255,7 @@ class AccountWhIslrDocInvoices(models.Model):
                         base_line = f_xc(line.account_invoice_line_id.price_subtotal)
                 base_line_ut = money2ut(base_line, ut_date)
                 values = {}
-                if apply_income and not rate_tuple[7]:
+                if apply_income:
                     wh_calc = ((rate_tuple[0] / 100.0) *
                                (rate_tuple[2] / 100.0) * base_line)
                     if subtract >= wh_calc:
@@ -269,24 +269,6 @@ class AccountWhIslrDocInvoices(models.Model):
                         'wh': wh,
                         'raw_tax_ut': money2ut(wh, ut_date),
                         'sustract': subtract or subtract_write,
-                    }
-                elif apply_income and rate_tuple[7]:
-                    tax_line_ut = (base_line_ut * (rate_tuple[0] / 100.0) *
-                                   (rate_tuple[2] / 100.0))
-                    if residual_ut >= tax_line_ut:
-                        wh_ut = 0.0
-                        residual_ut -= tax_line_ut
-                    else:
-                        wh_ut = tax_line_ut + residual_ut
-                        subtract_write_ut = residual_ut
-                        residual_ut = 0.0
-                    wh = ut2money(wh_ut, ut_date)
-                    values = {
-                        'wh': wh,
-                        'raw_tax_ut': wh_ut,
-                        'sustract': ut2money(
-                            residual_ut or subtract_write_ut,
-                            ut_date),
                     }
                 type_person = ''
                 if nature == False and residence == True:
