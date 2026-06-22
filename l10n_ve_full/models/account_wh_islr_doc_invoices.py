@@ -111,7 +111,7 @@ class AccountWhIslrDocInvoices(models.Model):
             }
             iwdl_local = self.env['account.wh.islr.doc.line'].search([('islr_wh_doc_id', '=', ret_line.islr_wh_doc_id.id)])
             for line in iwdl_local:
-                calc_amount = (line.base_amount * line.retencion_islr / 100) - line.subtract
+                calc_amount = line.amount
                 if calc_amount < 0:
                     calc_amount = 0.0
                 res[ret_line.id]['amount_islr_ret'] += calc_amount
