@@ -332,6 +332,9 @@ class AccountReport(models.AbstractModel):
         else:
             currency = None
 
+        if digits is None:
+            digits = 1
+
         if self.is_zero(value, currency=currency, figure_type=figure_type, digits=digits):
             if blank_if_zero:
                 return ''
