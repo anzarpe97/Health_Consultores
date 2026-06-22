@@ -19,7 +19,7 @@
                                 <td style="width: 50%; vertical-align: top; padding-right: 10px; font-size: 9px;">
                                     <p><strong>Cliente:</strong> <t t-esc="doc.partner_id.name or ''"/></p>
                                     <p><strong>R.I.F:</strong> <t t-esc="doc.partner_id.rif or ''"/></p>
-                                    <p><strong>Direccion:</strong> <t t-esc="doc.partner_id.contact_address or ''"/></p>
+                                    <p><strong>Direccion:</strong> <t t-esc="', '.join([x for x in [doc.partner_id.street, doc.partner_id.street2, doc.partner_id.city, doc.partner_id.state_id.name, doc.partner_id.country_id.name] if x])"/></p>
                                     <p><strong>Telefono:</strong> <t t-esc="doc.partner_id.phone or ''"/></p>
                                 </td>
                                 <!-- Columna de Factura -->
@@ -59,13 +59,13 @@
                         <table class="table table-sm" style="width: 100%; border-collapse: collapse; font-size: 9px;">
                             <thead>
                                 <tr>
-                                    <th style="text-align: left;">Codigo</th>
-                                    <th style="text-align: left;">Producto</th>
-                                    <th style="text-align: right;">Cantidad</th>
-                                    <th style="text-align: right;">Precio</th>
-                                    <th style="text-align: right;">Precio Ref</th>
-                                    <th style="text-align: center;">Dscto %</th>
-                                    <th style="text-align: right;">Total</th>
+                                    <th style="text-align: left; width: 10%;">Codigo</th>
+                                    <th style="text-align: left; width: 35%;">Producto</th>
+                                    <th style="text-align: right; width: 8%;">Cantidad</th>
+                                    <th style="text-align: right; width: 15%;">Precio</th>
+                                    <th style="text-align: right; width: 12%;">Precio Ref</th>
+                                    <th style="text-align: right; width: 10%;">Dscto %</th>
+                                    <th style="text-align: right; width: 15%;">Total</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -85,7 +85,7 @@
                                     <td style="border: none; text-align: right; font-size: 9px;">
                                         <t t-esc="'{:,.2f}'.format(line.ref_unit or 0.0).replace(',', 'X').replace('.', ',').replace('X', '.')"/>
                                     </td>
-                                    <td style="border: none; text-align: center; font-size: 9px;">
+                                    <td style="border: none; text-align: right; font-size: 9px;">
                                         <t t-esc="line.discount"/>
                                     </td>
                                     <td style="border: none; text-align: right; font-size: 9px;">
