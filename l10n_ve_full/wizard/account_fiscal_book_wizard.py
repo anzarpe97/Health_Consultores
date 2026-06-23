@@ -1005,15 +1005,24 @@ class FiscalBookWizard(models.TransientModel):
                 planilla = ''
                 expediente = ''
                 total = 0
-                partner = self.env['res.partner'].search([('rif', '=', h.partner_vat)])
-                if partner and len(partner) == 1:
-                    partner_1 = partner
-                else:
-                    partner = self.env['res.partner'].search([('name', '=', h.partner_vat)])
-                    partner_1 = partner
+                partner = False
                 if h.invoice_id:
                     partner = h.invoice_id.partner_id
-                    partner_1 = partner
+                elif h.iwdl_id and h.iwdl_id.invoice_id:
+                    partner = h.iwdl_id.invoice_id.partner_id
+                elif h.iwdl_id and h.iwdl_id.retention_id:
+                    partner = h.iwdl_id.retention_id.partner_id
+
+                if not partner and h.partner_vat:
+                    partner_list = self.env['res.partner'].search([('rif', '=', h.partner_vat)])
+                    if partner_list:
+                        partner = partner_list[0]
+                    else:
+                        partner_list = self.env['res.partner'].search([('name', '=', h.partner_vat)])
+                        if partner_list:
+                            partner = partner_list[0]
+
+                partner_1 = partner
                 if (partner_1.company_type == 'company' or partner_1.company_type == 'person') and (
                         partner_1.people_type_company or partner_1.people_type_individual) and (
                         partner_1.people_type_company == 'pjdo' or partner_1.people_type_individual == 'pnre' or partner_1.people_type_individual == 'pnnr'):
@@ -1641,16 +1650,24 @@ class PurchaseBook(models.AbstractModel):
             planilla = ''
             expediente = ''
             total = 0
-            partner = self.env['res.partner'].search([('rif', '=', h.partner_vat)])
-            if partner and len(partner) == 1:
-                partner_1 = partner
-            else:
-                partner = self.env['res.partner'].search([('name', '=', h.partner_vat)])
-                partner_1 = partner
-
+            partner = False
             if h.invoice_id:
                 partner = h.invoice_id.partner_id
-                partner_1 = partner
+            elif h.iwdl_id and h.iwdl_id.invoice_id:
+                partner = h.iwdl_id.invoice_id.partner_id
+            elif h.iwdl_id and h.iwdl_id.retention_id:
+                partner = h.iwdl_id.retention_id.partner_id
+
+            if not partner and h.partner_vat:
+                partner_list = self.env['res.partner'].search([('rif', '=', h.partner_vat)])
+                if partner_list:
+                    partner = partner_list[0]
+                else:
+                    partner_list = self.env['res.partner'].search([('name', '=', h.partner_vat)])
+                    if partner_list:
+                        partner = partner_list[0]
+
+            partner_1 = partner
 
             if (partner_1.company_type == 'company' or partner_1.company_type == 'person') and (
                     partner_1.people_type_company or partner_1.people_type_individual) and (
