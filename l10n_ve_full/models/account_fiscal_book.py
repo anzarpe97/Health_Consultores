@@ -7,6 +7,24 @@ from datetime import timedelta, datetime, date
 from odoo.tools import DEFAULT_SERVER_DATE_FORMAT
 
 
+def calcular_digito_rif(cedula):
+    if not cedula:
+        return '0'
+    import re
+    cleaned = re.sub(r'\D', '', str(cedula))
+    normalized = cleaned.zfill(8)
+    weights = [3, 2, 7, 6, 5, 4, 3, 2]
+    total_sum = sum(int(digit) * weight for digit, weight in zip(normalized, weights))
+    residue = total_sum % 11
+    diff = 11 - residue
+    if diff in (10, 11):
+        digit = 0
+    else:
+        digit = diff
+    return str(digit)
+
+
+
 class AccountFiscalBook(models.Model):
     _description = "Libro de Compra o Venta"
     _name = 'account.fiscal.book'
@@ -1174,15 +1192,19 @@ class AccountFiscalBook(models.Model):
                                 if people_type == 'pjdo':
                                     document_v = rp_brw.rif
                             elif rp_brw.company_type == 'person':
+                                people_type = rp_brw.people_type_individual
                                 if rp_brw.rif:
                                     document_v = rp_brw.rif
-                                    people_type = rp_brw.people_type_individual
                                 else:
-                                    people_type = rp_brw.people_type_individual
-                                    if rp_brw.nationality == 'V' or rp_brw.nationality == 'E':
-                                        document_v = str(rp_brw.nationality) + str(rp_brw.identification_id)
+                                    if rp_brw.identification_id:
+                                        import re
+                                        clean_id = re.sub(r'\D', '', str(rp_brw.identification_id))
+                                        normalized_id = clean_id.zfill(8)
+                                        nat = (rp_brw.nationality or 'V').upper()
+                                        y_digit = calcular_digito_rif(normalized_id)
+                                        document_v = f"{nat}-{normalized_id}-{y_digit}"
                                     else:
-                                        document_v = rp_brw.identification_id
+                                        document_v = 'N/A'
 
                         doc_type = self.get_doc_type(inv_id=iwdl_brw.invoice_id.id)
 
@@ -1264,10 +1286,18 @@ class AccountFiscalBook(models.Model):
                             document_v = rp_brw.rif
                     elif rp_brw.company_type == 'person':
                         people_type = rp_brw.people_type_individual
-                        if rp_brw.nationality == 'V' or rp_brw.nationality == 'E':
-                            document_v = str(rp_brw.nationality) + str(rp_brw.identification_id)
+                        if rp_brw.rif:
+                            document_v = rp_brw.rif
                         else:
-                            document_v = rp_brw.identification_id
+                            if rp_brw.identification_id:
+                                import re
+                                clean_id = re.sub(r'\D', '', str(rp_brw.identification_id))
+                                normalized_id = clean_id.zfill(8)
+                                nat = (rp_brw.nationality or 'V').upper()
+                                y_digit = calcular_digito_rif(normalized_id)
+                                document_v = f"{nat}-{normalized_id}-{y_digit}"
+                            else:
+                                document_v = 'N/A'
 
                 if (doc_type == "N/DB" or doc_type == "N/CR"):
                     if fb_brw.type == 'sale':
