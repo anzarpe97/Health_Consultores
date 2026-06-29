@@ -185,27 +185,25 @@ class AccountMoveLine(models.Model):
                 group['tax_today'] = 0
         return res
 
-    @api.depends('amount_currency', 'tax_today','debit')
+    @api.depends('amount_currency', 'tax_today', 'debit', 'currency_id')
     def _debit_usd(self):
         for rec in self:
-            if not rec.debit == 0:
-                if rec.move_id.currency_id == self.env.company.currency_id:
-                    amount_currency = (rec.amount_currency if rec.amount_currency > 0 else (rec.amount_currency * -1))
-                    rec.debit_usd = (amount_currency / rec.tax_today) if rec.tax_today > 0 else 0
+            if rec.debit != 0:
+                if rec.currency_id and rec.currency_id == rec.move_id.currency_id_dif:
+                    rec.debit_usd = abs(rec.amount_currency)
                 else:
-                    rec.debit_usd = (rec.amount_currency if rec.amount_currency > 0 else (rec.amount_currency * -1))
+                    rec.debit_usd = (rec.debit / rec.tax_today) if rec.tax_today > 0 else 0
             else:
                 rec.debit_usd = 0
 
-    @api.depends('amount_currency', 'tax_today','credit')
+    @api.depends('amount_currency', 'tax_today', 'credit', 'currency_id')
     def _credit_usd(self):
         for rec in self:
-            if not rec.credit == 0:
-                if rec.move_id.currency_id == self.env.company.currency_id:
-                    amount_currency = (rec.amount_currency if rec.amount_currency > 0 else (rec.amount_currency * -1))
-                    rec.credit_usd = (amount_currency / rec.tax_today) if rec.tax_today > 0 else 0
+            if rec.credit != 0:
+                if rec.currency_id and rec.currency_id == rec.move_id.currency_id_dif:
+                    rec.credit_usd = abs(rec.amount_currency)
                 else:
-                    rec.credit_usd = (rec.amount_currency if rec.amount_currency > 0 else (rec.amount_currency * -1))
+                    rec.credit_usd = (rec.credit / rec.tax_today) if rec.tax_today > 0 else 0
             else:
                 rec.credit_usd = 0
 
